@@ -2,9 +2,17 @@
 #include <stdlib.h>
 #include <matheval.h>
 #include "newtonSNL.h"
+#include "utils.h"
 
 
-int main(){
-    read_input();
-    return 1;
+int main(int argc, char *argv[]){
+    FILE *arquivo_saida = stdout;
+    FILE *arquivo = stdin;
+
+    while ( !feof(arquivo) ){
+        read_input();
+    }
+
+
+    return EXIT_SUCCESS;
 }

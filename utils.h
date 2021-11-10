@@ -1,19 +1,18 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <matheval.h>
 #include <stdlib.h>
 #include <sys/time.h>
 
-/*  Retorna tempo em milisegundos
 
-    Forma de uso:
- 
-    double tempo;
-    tempo = timestamp();
-    <trecho de programa do qual se deseja medir tempo>
-    tempo = timestamp() - tempo;
-*/
+#define SIZE_BUFFER 1024
 
+void read_input();
+
+//  Retorna tempo em milisegundos
 double timestamp(void);
 
 #endif // __UTILS_H__
