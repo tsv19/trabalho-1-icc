@@ -18,11 +18,8 @@ newtonSNL.o: newtonSNL.c newtonSNL.h
 utils.o: utils.c utils.h
 	gcc -c $(CFLAGS) utils.c $(LIBS)
 
-teste1:
-	./newtonSNL < exemples/sistemas.dat
-
-teste2:
-	./newtonSNL -o saida.out
+teste:
+	./newtonSNL < examples/sistemas.dat -o saida.out
 
 clean: 
 	rm $(objects)
