@@ -4,10 +4,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <matheval.h>
+#include <math.h>
 #include <stdlib.h>
 #include <sys/time.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <string.h>
+#include "utils.h"
 
 
 // Criterio de parada escolhido: erro relativo aproximado (ERa)
@@ -17,7 +20,6 @@ double calc_crit_stop(double x_atual, double x_anterior);
 double calc_new_x(double x, double numerador, double denominador);
 
 // calcula o metodo de newton 
-void newtonMetod(void *f, void* f_deriv, double epsilon, double *newton_x, 
-double *newton_x_prev, double *newton_crit, int *newton_stop);
+void newtonMetod(SL_T *sl, double epsilon, uint max_iter);
 
 #endif

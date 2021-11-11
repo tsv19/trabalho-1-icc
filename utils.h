@@ -13,9 +13,10 @@
 
 typedef struct SL_T {
 	unsigned int n;
-	int **derivadas;
-	int **expressoes;
-	double *incognitas;
+	void ***jacobiana;
+	double *termos_indep;
+	int **expressoes;  // expressoes das funcoes nao lineares que compoem o sistema
+	double *incognitas;  // aproxmacao das ingonitas
 } SL_T;
 
 
@@ -28,6 +29,8 @@ SL_T *aloca_sistema_linear(unsigned int n, int **expressoes, double *incognitas)
 
 // 
 SL_T *le_input(FILE *output, double *epsilon, unsigned int *max_iter);
+
+void imprime_sistena_linear(SL_T *sl);
 
 //  Retorna tempo em milisegundos
 double timestamp(void);

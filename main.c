@@ -5,56 +5,32 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <ctype.h>
+#include "entrada.h"
 #include "newtonSNL.h"
+#include "jacobiana.h"
+#include "gauss.h"
 #include "utils.h"
 
 
 int main(int argc, char *argv[]){
 	FILE* input  				= stdin;
 	FILE *output				= stdout;
-
 	SL_T *sistema_linear		= NULL;
 
-	double *epsilon 			= 0; 
-	
-	int max_iter				= 0;
-	// int ret						= 0;
-    int opcao					= 0;
-	opterr						= 0;
+	double epsilon 			= 0; 
+	unsigned int max_iter				= 0;
 
-	// usa getopt para filtrar as entradas do programa
-	while ((opcao = getopt(argc, argv, "o:")) != -1){
-		switch (opcao){
-			// opcao de saida
-			case 'o':
-				output = fopen(optarg, "w+");
-				if (!output){
-					fprintf(stderr, "Erro ao abrir arquivo de saida\n");
-					exit(1);
-				}
-			break;
-			
-			// caso seja digitada uma opcao diferente
-			case '?':
-				if ( optopt == 'o')
-					fprintf(stderr, "Opcao -%c requer um argumento.\n", optopt);
-				else if (isprint (optopt))
-					fprintf(stderr, "Opcao desconhecida `-%c'.\n", optopt);
-				else
-					fprintf(stderr, "Caracter de opcao desconhecido`\\x%x'.\n",
-							optopt);
-			return 1;
-			
-			default:
-				abort();
-		}
-	}
+	le_opcoes(argc, argv, output);
 
-    while ( !feof(input) ){
-        sistema_linear = le_input(output, &epsilon, &max_iter);
-
-		
+    while (!feof(input)){
+        sistema_linear = le_input(input, &epsilon, &max_iter);
+		sistema_linear->jacobiana = gera_matriz_jacobiana(sistema_linear->expressoes, sistema_linear->incognitas, sistema_linear->n);
+		newtonMetod(sistema_linear, epsilon, max_iter);
+		eliminacao_gauss(sistema_linear->jacobiana, sistema_linear->termos_indep, sistema_linear->n);
+		// retrossub(sistema_linear->jacobiana, sistema_linear->termos_indep, sistema_linear->n);
     }
 
+	fclose(input);
+	fclose(output);
     return EXIT_SUCCESS;
 }

@@ -13,27 +13,38 @@ double calc_new_x(double x, double numerador, double denominador){
 }
 
 
+// Retorna o maior valor encontrado
+double acha_max(double *vetor, int n){
+	double maior = 0.0;
+	for (int i=0; i<n; i++)
+		if (maior < vetor[i])
+			maior = vetor[i];
+	return maior;
+}
+
+
 // calcula metodo de newton
-void newtonMetod(void *f, void* f_deriv, double epsilon, double *newton_x, 
-double *newton_x_prev, double *newton_crit, int *newton_stop){
+void newtonMetod(SL_T *sl, double epsilon, uint max_iter){
+	double f_value, f_deriv_value;
+	void *f_deriv = malloc(sizeof(int));
 
-	// Calcula funcao de iteracao do metodo de Newton-Raphson
-	double f_value = evaluator_evaluate_x(f, *newton_x);
-	double f_deriv_value = evaluator_evaluate_x(f_deriv, *newton_x);
-	
-	if (fabs(f_deriv_value) < epsilon){
-		f_deriv_value = evaluator_evaluate_x(f_deriv, *newton_x_prev);
+	for (int i=0; i<max_iter; i++){
+		for (int j=0; j<sl->n; j++){
+			// Newton
+			// Calcula funcao de iteracao do metodo de Newton-Raphson
+			f_value = evaluator_evaluate_x(sl->expressoes[j], sl->incognitas[j]);
+			f_deriv = evaluator_derivative_x(sl->expressoes[j]);
+			f_deriv_value = evaluator_evaluate_x(f_deriv, sl->incognitas[j]);
+
+			double new_x = sl->incognitas[j] - (f_value - f_deriv_value);
+
+			// Atualiza valor
+			sl->incognitas[j] = new_x;
+		}
+
+		// Confere se ja esta proximo o suficiente
+		if (fabs(acha_max(sl->incognitas, sl->n)) < epsilon)
+			return;
 	}
-	
-	double newton_x_new = calc_new_x(*newton_x, f_value, f_deriv_value);
-
-	// Confere criterio de parada
-	*newton_crit = calc_crit_stop(newton_x_new, *newton_x);
-	*newton_stop = *newton_crit < epsilon;
-
-	// Atualiza valor
-	*newton_x_prev = *newton_x;
-	*newton_x = newton_x_new;
-
 	return;
 }
