@@ -7,7 +7,7 @@ Fernanda Yukari Kawasaki (GRR20185057)
 */
 
 #include "newtonSNL.h"
-#include "jacobiana.h"
+
 
 
 // Criterio de parada escolhido: erro relativo aproximado (ERa)
@@ -58,33 +58,45 @@ double calcula_newton(int *funcao, uint n, uint max_iter, double epsilon){
 
 // calcula metodo de newton
 void newtonMetod(SL_T *sl, double epsilon, uint max_iter){
-	// double *delta = (double *)malloc(sl->n * sizeof(double));
-	// if ( delta == NULL ){
-	// 	fprintf(stderr, "Erro ao alocar memoria em \"newtonMetod\"");
-	// 	abort();
-	// }
+	double *delta = (double *)malloc(sl->n * sizeof(double));
+	if ( delta == NULL ){
+		fprintf(stderr, "Erro ao alocar memoria em \"newtonMetod\"");
+		return;
+	}
 
-	// double **result_jacobiana = (double **)malloc(n * sizeof(double *) + sl->n * sizeof(double));
-	// if ( result_jacobiana == NULL ){
-	// 	fprintf(stderr, "Erro ao alocar memoria em \"newtonMetod\"");
-	// 	abort();
-	// }
-	// result_jacobiana[0] = (double *)(result_jacobiana + n) ;
-	// for (int i = 1; i < n; i++){
-  	// 	result_jacobiana[i] = result_jacobiana[0] + (i * n) ;
-	// }
-
+	double **result_jacobiana = (double **)malloc(sl->n * sizeof(double *) + sl->n * sizeof(double));
+	if ( result_jacobiana == NULL ){
+		fprintf(stderr, "Erro ao alocar memoria em \"newtonMetod\"");
+		return;
+	}
+	result_jacobiana[0] = (double *)(result_jacobiana + sl->n) ;
+	for (int i = 1; i < sl->n; i++)
+  		result_jacobiana[i] = result_jacobiana[0] + (i * sl->n) ;
 
 
 
+	for (int i = 0; i < max_iter; i++){
 
-	// calcula_jacobiana(sl->jacobiana, sl->incognitas, result_jacobiana, sl->n);
+		// Se ||F(X^(i))|| < epsilon devolva X^(i)
+		// if ( norma(sl->expressoes, sl->incognitas, sl->n) < epsilon )
+		// 	return; 
+		
+		// delta^(i) = resolva o sl J(X^(i)) * delta^(i) = - F(X^(i))
+		calcula_jacobiana(sl->jacobiana, sl->incognitas, result_jacobiana, sl->n);
+		eliminacao_gauss(result_jacobiana, sl->termos_indep, sl->n);
 
-	for (int linha=0; linha<sl->n; linha++)
-		// F'(X) * delta = - F(X)
-		sl->incognitas[linha] = calcula_newton(sl->expressoes[linha], sl->n, max_iter, epsilon);
 
-	// free(delta);
-	// free(result_jacobiana);
+		// X^(i+1) = X^(i) + delta^(i)
+		for (int i = 0; i < sl->n; i++){
+			sl->incognitas[i] += delta[i]; 
+		}
+		
+		// Se ||delta^(i)|| < epsilon devolva X^(i+1)
+		// if ( norma(delta, sl->incognitas, sl->n) < epsilon )
+			// 	return;
+	}
+
+	free(delta);
+	free(result_jacobiana);
 	return;
 }

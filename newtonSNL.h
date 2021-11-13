@@ -18,6 +18,8 @@ Fernanda Yukari Kawasaki (GRR20185057)
 #include <unistd.h>
 #include <ctype.h>
 #include <string.h>
+#include "jacobiana.h"
+#include "gauss.h"
 #include "utils.h"
 
 

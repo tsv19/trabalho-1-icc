@@ -80,7 +80,6 @@ void eliminacao_gauss(double **matriz_coef, double *vet_termos, uint n){
 			
 			vet_termos[k] -= vet_termos[i] * m;
 		}
-
 	}	
 }
 
