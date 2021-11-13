@@ -67,8 +67,9 @@ SL_T *aloca_sistema_linear(uint n, int **expressoes, double *incognitas){
 		fprintf(stderr, "Erro ao alocar memoria em \"aloca_sistema_linear\"");
 		abort();
 	}
-	
-	void ***sl->jacobiana = (void ***)malloc(n * sizeof(void **) + n * n * sizeof(void *));
+
+	// void ***
+	sl->jacobiana = (void ***)malloc(n * sizeof(void **) + n * n * sizeof(void *));
 	
 	if ( sl->jacobiana == NULL ){
 		fprintf(stderr, "Erro ao alocar memoria em \"gera_matriz_jacobiana\"");
@@ -111,6 +112,7 @@ SL_T *le_input(FILE *input, double *epsilon, uint *max_iter){
 	for (int i = 0; i < n; i++){
 		fscanf(input, "%s", fx);
 		expressoes[i] = evaluator_create(fx);
+		assert(expressoes[i]);
         // fprintf(output, "%s\n", fx);
 	}
 
@@ -123,7 +125,7 @@ SL_T *le_input(FILE *input, double *epsilon, uint *max_iter){
 
 	for (int i = 0; i < n; i++){
 		fscanf(input, "%lf", &incognitas[i]);
-        // fprintf(output, "%lf\n", incognitas[i]);
+        // fprintf(stdout, "%lf\n", incognitas[i]);
 	}
 
     fscanf(input, "%lf", epsilon);

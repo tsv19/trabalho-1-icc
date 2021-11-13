@@ -21,6 +21,7 @@ Fernanda Yukari Kawasaki (GRR20185057)
 
 /*
 *	Faz o calculo da jacobiana para cada funcao derivada da matriz
+*
 *	param	jacobiana	: armazena a matriz com as F'(X);
 *	param	incognitas	: armazena os valores de X atuais;
 *	param	result     	: armazena o resultado do calculo da jacobiana;
@@ -31,6 +32,7 @@ double **result, uint n);
 
 /*
 *	Gera a matriz jacobiana com todos os F'(X)
+*
 *	param	jacobiana	: armazena a matriz com as F'(X);
 *	param	expressoes  : armazena todas das F(X) recebidas do input;
 *	param	incognitas  : armazena o resultado do calculo da jacobiana;

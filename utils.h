@@ -16,15 +16,16 @@ Fernanda Yukari Kawasaki (GRR20185057)
 #include <sys/time.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <assert.h>
 
 #define SIZE_BUFFER 1024
 
 typedef struct SL_T {
 	unsigned int n;
-	void ***jacobiana;
-	double *termos_indep;
 	int **expressoes;  // expressoes das funcoes nao lineares que compoem o sistema
+	void ***jacobiana;
 	double *incognitas;  // aproximacao das ingonitas
+	double *termos_indep;
 } SL_T;
 
 

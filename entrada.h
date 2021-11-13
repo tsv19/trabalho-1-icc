@@ -11,4 +11,13 @@ Fernanda Yukari Kawasaki (GRR20185057)
 #include <unistd.h>
 #include <ctype.h>
 
+
+/*
+*	Le opcoes passadas quando o programa eh chamado
+*
+*	param	argc	quantidade de argumentos
+*	param	argv	argumentos passados
+*	param	output	arquivo que sera utilizado para armazenar a solucao
+*
+*/
 int le_opcoes(int argc, char *argv[], FILE *output);

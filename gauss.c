@@ -18,10 +18,10 @@ Fernanda Yukari Kawasaki (GRR20185057)
 *	param	n				dimensao do sistema linear
 */
 uint encontra_maximo(double **matriz_coef, uint coluna, uint n){
-	uint maximo = i;
+	uint maximo = coluna;
 	
-	for (int j = i + 1; j < n; j++){
-		if ( matriz_coef[maximo][i] < matriz_coef[j][i] )
+	for (int j = coluna + 1; j < n; j++){
+		if ( matriz_coef[maximo][coluna] < matriz_coef[j][coluna])
 			maximo = j;
 	}
 
@@ -101,11 +101,12 @@ void retrossub(SL_T *sl){
 	for (int i = (sl->n) - 1; i >= 0; i--){
 		soma = 0;
 		for (int j = i + 1; j < sl->n; j++){ // nao inclui a diagonal
-			printf("%d, %d = %lf\n", i, j, sl->jacobiana[i][j]);
-			// f_deriv_value = evaluator_evaluate_x(sl->jacobiana[i][j], sl->incognitas[i]);
+			printf("%d, %d = %p\n", i, j, sl->jacobiana[i][j]);
+			printf("%d, %d = %lf\n", i, j, sl->incognitas[i]);
+
+
 		// 	soma += f_deriv_value * sl->incognitas[i];
 		}
-		// f_value = evaluator_evaluate_x(sl->expressoes[i], sl->incognitas[i]);  // termo indep
 		// double coef = evaluator_evaluate_x(sl->jacobiana[i][i], sl->incognitas[i]);
 		// sl->incognitas[i] = (f_value - soma) / coef;
 		// printf("x%d = %lf\n", i, sl->incognitas[i]);
