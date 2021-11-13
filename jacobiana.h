@@ -1,3 +1,11 @@
+/* Trabalho 1 - CI1164 (2021-1 ERE)
+Prof. Dr. Guilherme Alex Derenievicz
+
+Autores:
+Tiago Serique Valadares (GRR20195138)
+Fernanda Yukari Kawasaki (GRR20185057)
+*/
+
 #ifndef __JACOBIANA_H__
 #define __JACOBIANA_H__
 
@@ -11,7 +19,23 @@
 #include <ctype.h>
 #include "utils.h"
 
-double **calcula_jacobiana(void ***jacobiana, double *incognitas, uint n);
-void ***gera_matriz_jacobiana(int **expressoes, double *incognitas, uint n);
+/*
+*	Faz o calculo da jacobiana para cada funcao derivada da matriz
+*	param	jacobiana	: armazena a matriz com as F'(X);
+*	param	incognitas	: armazena os valores de X atuais;
+*	param	result     	: armazena o resultado do calculo da jacobiana;
+*	param	n           : armazena o tamanho do sistema linear ;
+*/
+void calcula_jacobiana(void ***jacobiana, double *incognitas, 
+double **result, uint n);
+
+/*
+*	Gera a matriz jacobiana com todos os F'(X)
+*	param	jacobiana	: armazena a matriz com as F'(X);
+*	param	expressoes  : armazena todas das F(X) recebidas do input;
+*	param	incognitas  : armazena o resultado do calculo da jacobiana;
+*	param	n           : armazena o tamanho do sistema linear ;
+*/
+void gera_matriz_jacobiana(void ***jacobiana, int **expressoes, double *incognitas, uint n);
 
 #endif

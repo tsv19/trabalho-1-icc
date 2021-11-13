@@ -1,3 +1,12 @@
+/* Trabalho 1 - CI1164 (2021-1 ERE)
+Prof. Dr. Guilherme Alex Derenievicz
+
+
+Autores:
+Tiago Serique Valadares (GRR20195138)
+Fernanda Yukari Kawasaki (GRR20185057)
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <matheval.h>
@@ -24,10 +33,16 @@ int main(int argc, char *argv[]){
 
     while (!feof(input)){
         sistema_linear = le_input(input, &epsilon, &max_iter);
-		sistema_linear->jacobiana = gera_matriz_jacobiana(sistema_linear->expressoes, sistema_linear->incognitas, sistema_linear->n);
-		newtonMetod(sistema_linear, epsilon, max_iter);
+
+		gera_matriz_jacobiana(sistema_linear->jacobiana, sistema_linear->expressoes, sistema_linear->incognitas, sistema_linear->n);
+
+		for (int linha=0; linha<sistema_linear->n; linha++)
+			newtonMetod(sistema_linear, epsilon, max_iter);  // Resolve cada ENL
+
 		eliminacao_gauss(sistema_linear->jacobiana, sistema_linear->termos_indep, sistema_linear->n);
-		// retrossub(sistema_linear->jacobiana, sistema_linear->termos_indep, sistema_linear->n);
+		retrossub(sistema_linear);
+
+		printf("\n");
     }
 
 	fclose(input);

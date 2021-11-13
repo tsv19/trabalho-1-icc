@@ -1,3 +1,11 @@
+/* Trabalho 1 - CI1164 (2021-1 ERE)
+Prof. Dr. Guilherme Alex Derenievicz
+
+Autores:
+Tiago Serique Valadares (GRR20195138)
+Fernanda Yukari Kawasaki (GRR20185057)
+*/
+
 #ifndef __UTILS_H__
 #define __UTILS_H__
 
@@ -16,7 +24,7 @@ typedef struct SL_T {
 	void ***jacobiana;
 	double *termos_indep;
 	int **expressoes;  // expressoes das funcoes nao lineares que compoem o sistema
-	double *incognitas;  // aproxmacao das ingonitas
+	double *incognitas;  // aproximacao das ingonitas
 } SL_T;
 
 
@@ -25,12 +33,15 @@ void imprime_tempo(FILE *output, double tempo_total, double tempo_derivadas,
 double tempo_jacobiana, double tempo_sl);
 
 // 
-SL_T *aloca_sistema_linear(unsigned int n, int **expressoes, double *incognitas);
+void destroi_sl(SL_T *sl);
 
 // 
-SL_T *le_input(FILE *output, double *epsilon, unsigned int *max_iter);
+SL_T *aloca_sistema_linear(uint n, int **expressoes, double *incognitas);
 
-void imprime_sistena_linear(SL_T *sl);
+// 
+SL_T *le_input(FILE *output, double *epsilon, uint *max_iter);
+
+// void imprime_sistema_linear(SL_T *sl);
 
 //  Retorna tempo em milisegundos
 double timestamp(void);

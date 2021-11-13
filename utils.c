@@ -1,6 +1,22 @@
+/* Trabalho 1 - CI1164 (2021-1 ERE)
+Prof. Dr. Guilherme Alex Derenievicz
+
+Autores:
+Tiago Serique Valadares (GRR20195138)
+Fernanda Yukari Kawasaki (GRR20185057)
+*/
+
 #include "utils.h"
 
-
+/*
+*	Imprime a saida no arquivo indicado
+*
+*	param	output				arquivo onde a saida sera armazenada
+*	param	tempo_total			tempo
+*	param	tempo_derivadas		tempo gasto no calculo das derivadas parciais
+*	param	tempo_jacobiana		tempo gasto para gerar a matriz jacobiana
+*	param	tempo_sl			tempo gasto para resolver os sistemas lineares
+*/
 void imprime_tempo(FILE *output, double tempo_total, double tempo_derivadas, 
 double tempo_jacobiana, double tempo_sl){
 	fprintf(output, "###########\n");
@@ -12,23 +28,73 @@ double tempo_jacobiana, double tempo_sl){
 }
 
 
-// 
-SL_T *aloca_sistema_linear(unsigned int n, int **expressoes, double *incognitas){
+/*
+*	Libera a memoria ocupada pela struct SL_T (sistema linear)
+*
+*	param	sl	apontador para o sistema linear
+*/
+void destroi_sl(SL_T *sl){
+	free(sl->expressoes);
+	free(sl->incognitas);
+	free(sl->termos_indep);
+	free(sl->jacobiana);
+	free(sl);
+}
+
+
+/*
+*	Aloca espaco na memoria para o sistema linear
+*
+*	param	n			dimensao do sistema
+*	param	expressoes	expressoes das funcoes nao lineares
+*	param	incognitas	vetor com aproximacao das incognitas
+*
+*/ 
+SL_T *aloca_sistema_linear(uint n, int **expressoes, double *incognitas){
 	SL_T *sl = (SL_T *)malloc(sizeof(SL_T));
+	if ( sl == NULL ){
+		fprintf(stderr, "Erro ao alocar memoria em \"aloca_sistema_linear\"");
+		abort();
+	}
+
 	sl->n = n;
 	sl->expressoes	 = expressoes;
 	sl->incognitas	 = incognitas;
-	sl->termos_indep	 = malloc(n * sizeof(double));
+	
+	sl->termos_indep	 = (double *)malloc(n * sizeof(double));
+	
+	if ( sl->termos_indep == NULL ){
+		fprintf(stderr, "Erro ao alocar memoria em \"aloca_sistema_linear\"");
+		abort();
+	}
+	
+	void ***sl->jacobiana = (void ***)malloc(n * sizeof(void **) + n * n * sizeof(void *));
+	
+	if ( sl->jacobiana == NULL ){
+		fprintf(stderr, "Erro ao alocar memoria em \"gera_matriz_jacobiana\"");
+		abort();
+	}
+	sl->jacobiana[0] = (void **)(sl->jacobiana + n) ;
+	for (int i = 1; i < n; i++){
+  		sl->jacobiana[i] = sl->jacobiana[0] + (i * n) ;
+	}
+
 	return sl;
 }
 
 
-// le a os dados de entrada
-SL_T *le_input(FILE *input, double *epsilon, unsigned int *max_iter){
-	int **temp;
-	unsigned int n;
+/*
+*	Le o arquivo passado na entrada padrao
+*
+*	param	input		arquivo da entrada padrao
+*	param	epsilon		tolerancia epsilon (criterio de parada)
+*	param	max_iter	numero maximo de iteracoes para o metodo de newton
+*
+*/ 
+SL_T *le_input(FILE *input, double *epsilon, uint *max_iter){
+	int **expressoes;
+	uint n;
 	double *incognitas;
-
 
 	// dimensao do SNL
 	fscanf(input, "%u", &n);
@@ -36,16 +102,25 @@ SL_T *le_input(FILE *input, double *epsilon, unsigned int *max_iter){
 
 	// string da expressão da função fi(x), sem espaços, na variável x.
 	char fx[SIZE_BUFFER + 1];
-	temp = (int **)malloc((n) * sizeof(void *));
-	
+	expressoes = (int **)malloc((n) * sizeof(void *));
+	if ( expressoes == NULL ){
+		fprintf(stderr, "Erro ao alocar memoria em \"le_input\"");
+		abort();
+	}
+
 	for (int i = 0; i < n; i++){
 		fscanf(input, "%s", fx);
-		temp[i] = evaluator_create(fx);
+		expressoes[i] = evaluator_create(fx);
         // fprintf(output, "%s\n", fx);
 	}
 
     // aproximacao inicial
-    incognitas = malloc(n * sizeof(double));
+    incognitas = (double *)malloc(n * sizeof(double));
+	if ( incognitas == NULL ){
+		fprintf(stderr, "Erro ao alocar memoria em \"le_input\"");
+		abort();
+	}
+
 	for (int i = 0; i < n; i++){
 		fscanf(input, "%lf", &incognitas[i]);
         // fprintf(output, "%lf\n", incognitas[i]);
@@ -53,30 +128,15 @@ SL_T *le_input(FILE *input, double *epsilon, unsigned int *max_iter){
 
     fscanf(input, "%lf", epsilon);
     fscanf(input, "%u\n", max_iter);
-	return aloca_sistema_linear(n, temp, incognitas);
+	// sl = aloca_sistema_linear(n, expressoes, incognitas);
+
+	return aloca_sistema_linear(n, expressoes, incognitas);
 }
 
 
-// so para desenvolver - apagar depois
-void imprime_sistena_linear(SL_T *sl){
-	printf("n = %d\n", sl->n);
-
-	// printf("derivadas:\n");
-	// for (int i=0; i<; i++)
-	// 	for (int j=0; j<; j++)
-	// 		printf("derivadas[%d][%d] = %d", i, j, sl->derivadas[i][j]);
-	// printf("\n");
-
-	// printf("expressoes:");
-
-	// printf("incognitas:\n");
-	// for (int i=0; i<sl->n; i++)
-	// 	printf("expressoes[%d] = %d\n", i, *(sl->expressoes[i]));
-	// printf("\n");
-}
-
-
-//  Retorna tempo em milisegundos
+/*
+*	Retorna tempo em milisegundos
+*/ 
 double timestamp(void){
 	struct timeval tp;
 	gettimeofday(&tp, NULL);

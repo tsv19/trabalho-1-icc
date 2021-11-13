@@ -1,3 +1,11 @@
+/* Trabalho 1 - CI1164 (2021-1 ERE)
+Prof. Dr. Guilherme Alex Derenievicz
+
+Autores:
+Tiago Serique Valadares (GRR20195138)
+Fernanda Yukari Kawasaki (GRR20185057)
+*/
+
 #ifndef __GAUSS_H__
 #define __GAUSS_H__
 
@@ -10,11 +18,32 @@
 #include <ctype.h>
 #include "utils.h"
 
-uint encontra_maximo(double **matriz_coef, uint i, uint n);
-void troca_linha(double **matriz_coef, double *vet_termos, int i, uint pivo,
+
+/*
+*	Encontra o valor maximo da coluna especificada para usar de pivo
+*	param	matriz_coef		matriz em que se deseja achar o pivo
+*	param	coluna			coluna em q se deseja achar o pivo
+*	param	n				dimensao do sistema linear
+*/
+uint encontra_maximo(double **matriz_coef, uint coluna, uint n);
+
+
+/*
+*	Troca as linhas da matriz de coeficientes e do vetor de termos independentes
+*	param	matriz_coef		matriz com as linhas que serao trocadas
+*	param 	vet_termos 		vetor que tera as linhas trocadas
+*	param 	linha			linha que deseja-se "descer"
+*	param 	pivo			linha que deseja-se "subir"
+* 	param 	n				dimensao do sistema linear
+*/
+void troca_linha(double **matriz_coef, double *vet_termos, int linha, uint pivo,
  uint n);
+
+// 
 void eliminacao_gauss(double **matriz_coef, double *vet_termos, uint n);
 
+// 
+void retrossub(SL_T *sl);
 
 
 #endif
