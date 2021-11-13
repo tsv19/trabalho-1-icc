@@ -20,11 +20,11 @@ Fernanda Yukari Kawasaki (GRR20185057)
 void imprime_tempo(FILE *output, double tempo_total, double tempo_derivadas, 
 double tempo_jacobiana, double tempo_sl){
 	fprintf(output, "###########\n");
-	fprintf(output, "# Tempo Total: <tempo total do Método de Newton> %lf\n", tempo_total);
-	fprintf(output, "# Tempo Derivadas: <tempo gasto no cálculo das derivadas parciais> %lf\n", tempo_derivadas);
-	fprintf(output, "# Tempo Jacobiana: <tempo gasto na construção das Jacobianas> %lf\n", tempo_jacobiana);
-	fprintf(output, "# Tempo SL: <tempo gasto na resolução dos sistemas lineares> %lf\n", tempo_sl);
-	fprintf(output, "###########\n");
+	fprintf(output, "# Tempo Total: %lf\n", tempo_total);
+	fprintf(output, "# Tempo Derivadas: %lf\n", tempo_derivadas);
+	fprintf(output, "# Tempo Jacobiana: %lf\n", tempo_jacobiana);
+	fprintf(output, "# Tempo SL: %lf\n", tempo_sl);
+	fprintf(output, "###########\n\n");
 }
 
 
@@ -81,6 +81,20 @@ SL_T *aloca_sistema_linear(uint n, int **expressoes, double *incognitas){
 	}
 
 	return sl;
+}
+
+void imprime_x(double *xi, uint n){
+	printf("#\n");
+	
+	for (int i = 0; i < n; i++)
+		printf("x%d = %lf\n", i+1, xi[i]);
+}
+
+
+void imprime_expressoes(SL_T * sl){
+	printf("%u\n", sl->n);
+	for (int i = 0; i < sl->n; i++)
+		printf("%s\n", evaluator_get_string(sl->expressoes[i]));
 }
 
 

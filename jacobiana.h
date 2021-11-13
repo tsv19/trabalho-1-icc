@@ -27,7 +27,7 @@ Fernanda Yukari Kawasaki (GRR20185057)
 *	param	result     	: armazena o resultado do calculo da jacobiana;
 *	param	n           : armazena o tamanho do sistema linear ;
 */
-void calcula_jacobiana(void ***jacobiana, double *incognitas, 
+double calcula_jacobiana(void ***jacobiana, double *incognitas, 
 double **result, uint n);
 
 /*

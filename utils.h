@@ -30,6 +30,12 @@ typedef struct SL_T {
 
 
 // 
+void imprime_x(double *xi, uint n);
+
+// 
+void imprime_expressoes(SL_T * sl);
+
+// 
 void imprime_tempo(FILE *output, double tempo_total, double tempo_derivadas, 
 double tempo_jacobiana, double tempo_sl);
 

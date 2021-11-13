@@ -33,39 +33,22 @@ int main(int argc, char *argv[]){
 
 
     while (!feof(input)){
+		double newton_time = 0, deriv_time = 0, jacobiana_time = 0, sl_time = 0;
         sistema_linear = le_input(input, &epsilon, &max_iter);
 
+		deriv_time = timestamp();
 		gera_matriz_jacobiana(sistema_linear->jacobiana, sistema_linear->expressoes, sistema_linear->incognitas, sistema_linear->n);
+		deriv_time = timestamp() - deriv_time;
 		
 
-		// TESTA CALCULA_JACOBIANA, ELIMINACAO DE GAUSS E RETROSSUB (TEMPORARIO, DEVE IR DENTRO DE NEWTON)
-		// double *delta = (double *)malloc(sistema_linear->n * sizeof(double));
-		// if ( delta == NULL ){
-		// 	fprintf(stderr, "Erro ao alocar memoria em \"newtonMetod\"");
-		// 	return EXIT_FAILURE;
-		// }
+		// imprime_expressoes(sistema_linear);
 
-		double **result_jacobiana = (double **)malloc(sistema_linear->n * sizeof(double *) + sistema_linear->n * sizeof(double));
-		if ( result_jacobiana == NULL ){
-			fprintf(stderr, "Erro ao alocar memoria em \"newtonMetod\"");
-			return EXIT_FAILURE;
-		}
-		// result_jacobiana[0] = (double *)(result_jacobiana + sistema_linear->n) ;
-		// for (int i = 1; i < sistema_linear->n; i++){
-		// 	result_jacobiana[i] = result_jacobiana[0] + (i * sistema_linear->n) ;
-		// }
-
-		// calcula_jacobiana(sistema_linear->jacobiana, sistema_linear->incognitas, result_jacobiana, sistema_linear->n);
-		// eliminacao_gauss(result_jacobiana, sistema_linear->termos_indep, sistema_linear->n);
-		// retrossub(result_jacobiana, sistema_linear->termos_indep, delta, sistema_linear->n);
-
-		double *delta = (double *)malloc(sistema_linear->n * sizeof(double));
-		newtonMetod(sistema_linear, delta, result_jacobiana, epsilon, max_iter);  // Resolve cada ENL
-
-		imprime_resultados(sistema_linear, delta, result_jacobiana);
-
-		// break;
-		printf("\n");
+		newton_time = timestamp();
+		newtonMetod(sistema_linear, epsilon, max_iter, &jacobiana_time, &sl_time);  // Resolve cada ENL
+		newton_time = timestamp() - newton_time;
+		
+		imprime_tempo(output, newton_time, deriv_time, jacobiana_time, sl_time);
+		break;
     }
 
 	fclose(input);
