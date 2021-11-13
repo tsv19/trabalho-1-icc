@@ -93,22 +93,13 @@ void eliminacao_gauss(double **matriz_coef, double *vet_termos, uint n){
 *	param	sl	struct do sistema linear
 *
 */ 
-void retrossub(SL_T *sl){
-	double soma;
-	double f_value, f_deriv_value;
-	printf("%d\n", sl->n);
-	for (int i = (sl->n) - 1; i >= 0; i--){
-		soma = 0;
-		for (int j = i + 1; j < sl->n; j++){ // nao inclui a diagonal
-			printf("%d, %d = %p\n", i, j, sl->jacobiana[i][j]);
-			printf("%d, %d = %lf\n", i, j, sl->incognitas[i]);
-
-
-		// 	soma += f_deriv_value * sl->incognitas[i];
+void retrossub(double **matriz_coef, double *vet_termos, double *x, uint n){
+	for (int i = (n) - 1; i >= 0; --i){
+		x[i] = vet_termos[i];
+		for (int j = i + 1; j < n; j++){ // nao inclui a diagonal
+			x[i] -= matriz_coef[i][j] * x[j];
 		}
-		// double coef = evaluator_evaluate_x(sl->jacobiana[i][i], sl->incognitas[i]);
-		// sl->incognitas[i] = (f_value - soma) / coef;
-		// printf("x%d = %lf\n", i, sl->incognitas[i]);
+		x[i] /= matriz_coef[i][i];
 	}
 
 }

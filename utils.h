@@ -39,9 +39,6 @@ void destroi_sl(SL_T *sl);
 // 
 SL_T *aloca_sistema_linear(uint n, int **expressoes, double *incognitas);
 
-// 
-SL_T *le_input(FILE *output, double *epsilon, uint *max_iter);
-
 // void imprime_sistema_linear(SL_T *sl);
 
 //  Retorna tempo em milisegundos

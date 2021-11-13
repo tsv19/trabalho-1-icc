@@ -25,20 +25,20 @@ void calcula_jacobiana(void ***jacobiana, double *incognitas, double **result, u
 		for (int j = 0; j < n; j++){
 			evaluator_get_variables(jacobiana[i][j], &names, &count);
 			result[i][j] = evaluator_evaluate(jacobiana[i][j], count, names, incognitas);
-			printf("f'(x): %s === result: %lf == incog: %lf\n", evaluator_get_string(jacobiana[i][j]), result[i][j], incognitas[j]);
-			result[i][j] = evaluator_evaluate_x(jacobiana[i][j], incognitas[j]);
+			// printf("f'(x): %s === result: %lf == incog: %lf\n", evaluator_get_string(jacobiana[i][j]), result[i][j], incognitas[j]);
+			// result[i][j] = evaluator_evaluate_x(jacobiana[i][j], incognitas[j]);
 		}
-		printf("\n");
+		// printf("\n");
 	}
-		printf("\n");
+		// printf("\n");
 
-	for (int i = 0; i < n; i++){
-		for (int j = 0; j < n; j++){
-			printf("%lf ", result[i][j]);
-			// assert(result[i][j]);
-		}
-		printf("\n");
-	}
+	// for (int i = 0; i < n; i++){
+	// 	for (int j = 0; j < n; j++){
+	// 		printf("%lf ", result[i][j]);
+	// 		// assert(result[i][j]);
+	// 	}
+	// 	printf("\n");
+	// }
 }
 
 

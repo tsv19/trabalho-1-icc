@@ -52,7 +52,7 @@ void troca_linha(double **matriz_coef, double *vet_termos, int linha, uint pivo,
 void eliminacao_gauss(double **matriz_coef, double *vet_termos, uint n);
 
 // 
-void retrossub(SL_T *sl);
+void retrossub(double **matriz_coef, double *vet_termos, double *x, uint n);
 
 
 #endif

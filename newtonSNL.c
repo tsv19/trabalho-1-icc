@@ -84,6 +84,10 @@ void newtonMetod(SL_T *sl, double epsilon, uint max_iter){
 		// delta^(i) = resolva o sl J(X^(i)) * delta^(i) = - F(X^(i))
 		calcula_jacobiana(sl->jacobiana, sl->incognitas, result_jacobiana, sl->n);
 		eliminacao_gauss(result_jacobiana, sl->termos_indep, sl->n);
+		retrossub(result_jacobiana, sl->termos_indep, delta, sl->n);
+
+		for (int i = 0; i < sl->n; i++)
+			printf("delta(x%d) = %lf ", i, delta[i]);
 
 
 		// X^(i+1) = X^(i) + delta^(i)

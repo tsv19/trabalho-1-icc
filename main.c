@@ -37,10 +37,18 @@ int main(int argc, char *argv[]){
 
 		gera_matriz_jacobiana(sistema_linear->jacobiana, sistema_linear->expressoes, sistema_linear->incognitas, sistema_linear->n);
 		
+
+		// TESTA CALCULA_JACOBIANA, ELIMINACAO DE GAUSS E RETROSSUB (TEMPORARIO, DEVE IR DENTRO DE NEWTON)
+		// double *delta = (double *)malloc(sistema_linear->n * sizeof(double));
+		// if ( delta == NULL ){
+		// 	fprintf(stderr, "Erro ao alocar memoria em \"newtonMetod\"");
+		// 	return EXIT_FAILURE;
+		// }
+
 		// double **result_jacobiana = (double **)malloc(sistema_linear->n * sizeof(double *) + sistema_linear->n * sizeof(double));
 		// if ( result_jacobiana == NULL ){
 		// 	fprintf(stderr, "Erro ao alocar memoria em \"newtonMetod\"");
-		// 	abort();
+		// 	return EXIT_FAILURE;
 		// }
 		// result_jacobiana[0] = (double *)(result_jacobiana + sistema_linear->n) ;
 		// for (int i = 1; i < sistema_linear->n; i++){
@@ -48,7 +56,21 @@ int main(int argc, char *argv[]){
 		// }
 		// calcula_jacobiana(sistema_linear->jacobiana, sistema_linear->incognitas, result_jacobiana, sistema_linear->n);
 		// eliminacao_gauss(result_jacobiana, sistema_linear->termos_indep, sistema_linear->n);
-		// retrossub(sistema_linear);
+		// retrossub(result_jacobiana, sistema_linear->termos_indep, delta, sistema_linear->n);
+
+		// for (int i = 0; i < sistema_linear->n; i++){
+		// 	for (int j = 0; j < sistema_linear->n; j++)
+		// 		printf("%lf ", result_jacobiana[i][j]);	
+		// 	printf("\n");
+		// }
+
+		// printf("\n");
+		// for (int i = 0; i < sistema_linear->n; i++)
+		// 	printf("termos_indep(x%d) = %lf \n", i, sistema_linear->termos_indep[i]);
+
+		// printf("\n");
+		// for (int i = 0; i < sistema_linear->n; i++)
+		// 	printf("delta(x%d) = %lf \n", i, delta[i]);
 		
 		
 		// for (int linha=0; linha<sistema_linear->n; linha++)
