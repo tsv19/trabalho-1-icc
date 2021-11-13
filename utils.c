@@ -84,6 +84,28 @@ SL_T *aloca_sistema_linear(uint n, int **expressoes, double *incognitas){
 }
 
 
+void imprime_resultados(SL_T * sistema_linear, double *delta, double **result_jacobiana){
+	printf("===================\n");
+	for (int i = 0; i < sistema_linear->n; i++){
+		for (int j = 0; j < sistema_linear->n; j++)
+			printf("jac %lf ", result_jacobiana[i][j]);	
+		printf("\n");
+	}
+
+	printf("\n");
+	for (int i = 0; i < sistema_linear->n; i++)
+		printf("incognitas(x%d) = %lf \n", i, sistema_linear->incognitas[i]);
+
+
+	// printf("\n");
+	// for (int i = 0; i < sistema_linear->n; i++)
+	// 	printf("termos_indep(x%d) = %lf \n", i, sistema_linear->termos_indep[i]);
+
+	// printf("\n");
+	// for (int i = 0; i < sistema_linear->n; i++)
+	// 	printf("delta(x%d) = %lf \n", i, delta[i]);
+}
+
 
 /*
 *	Retorna tempo em milisegundos

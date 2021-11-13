@@ -39,7 +39,8 @@ void destroi_sl(SL_T *sl);
 // 
 SL_T *aloca_sistema_linear(uint n, int **expressoes, double *incognitas);
 
-// void imprime_sistema_linear(SL_T *sl);
+
+void imprime_resultados(SL_T * sistema_linear, double *delta, double **result_jacobiana);
 
 //  Retorna tempo em milisegundos
 double timestamp(void);

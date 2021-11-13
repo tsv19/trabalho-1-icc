@@ -8,28 +8,35 @@ Fernanda Yukari Kawasaki (GRR20185057)
 
 #include "newtonSNL.h"
 
-
-
-// Criterio de parada escolhido: erro relativo aproximado (ERa)
-double calc_crit_stop(double x_atual, double x_prev){
-    return fabs((x_atual - x_prev) / x_atual) * 100;
+// Retorna a maior norma
+double acha_max(double *normas, uint n){
+	double maior = 0.0;
+	for (int i=0; i<n; i++)
+		if (maior < normas[i])
+			maior = normas[i];
+	return maior;
 }
 
 
-// Calcula o proximo valor
-double calc_new_x(double x, double numerador, double denominador){
-    return x - (numerador/denominador);
+// Calcula as normas
+void calcula_normas(double *normas, double *incognitas, int **funcoes, int n){
+	char **names = malloc(n * SIZE_BUFFER);
+	int count;
+	for (int linha=0; linha<n; linha++){
+		evaluator_get_variables(funcoes[linha], &names, &count);
+		normas[linha] = evaluator_evaluate(funcoes[linha], count, names, incognitas);
+	}
 }
 
 
-// // Retorna o maior valor encontrado
-// double acha_max(double *vetor, int n){
-// 	double maior = 0.0;
-// 	for (int i=0; i<n; i++)
-// 		if (maior < vetor[i])
-// 			maior = vetor[i];
-// 	return maior;
-// }
+void calcula_termos_indep(double *termos_indep, double *incognitas, int **expressoes, uint n){
+	char **names = malloc(n * SIZE_BUFFER);
+	int count;
+	for (int linha=0; linha<n; linha++){
+		evaluator_get_variables(expressoes[linha], &names, &count);
+		termos_indep[linha] = - evaluator_evaluate(expressoes[linha], count, names, incognitas);
+	}
+}
 
 
 // F'(X) * delta = - F(X)
@@ -57,50 +64,63 @@ double calcula_newton(int *funcao, uint n, uint max_iter, double epsilon){
 
 
 // calcula metodo de newton
-void newtonMetod(SL_T *sl, double epsilon, uint max_iter){
-	double *delta = (double *)malloc(sl->n * sizeof(double));
-	if ( delta == NULL ){
-		fprintf(stderr, "Erro ao alocar memoria em \"newtonMetod\"");
-		return;
-	}
-
-	double **result_jacobiana = (double **)malloc(sl->n * sizeof(double *) + sl->n * sizeof(double));
-	if ( result_jacobiana == NULL ){
-		fprintf(stderr, "Erro ao alocar memoria em \"newtonMetod\"");
-		return;
-	}
+void newtonMetod(SL_T *sl, double *delta, double **result_jacobiana, double epsilon, uint max_iter){
 	result_jacobiana[0] = (double *)(result_jacobiana + sl->n) ;
 	for (int i = 1; i < sl->n; i++)
   		result_jacobiana[i] = result_jacobiana[0] + (i * sl->n) ;
 
 
-
 	for (int i = 0; i < max_iter; i++){
+		// Verifica criterio de parada
+		double *normas = malloc(sizeof(double) * sl->n);
+		calcula_normas(normas, sl->incognitas, sl->expressoes, sl->n);
+		double max = acha_max(normas, sl->n);
+		if (max < epsilon)
+			return;  // Se ||F(X^(i))|| < epsilon devolva X^(i)
 
-		// Se ||F(X^(i))|| < epsilon devolva X^(i)
-		// if ( norma(sl->expressoes, sl->incognitas, sl->n) < epsilon )
-		// 	return; 
-		
+
 		// delta^(i) = resolva o sl J(X^(i)) * delta^(i) = - F(X^(i))
+		calcula_termos_indep(sl->termos_indep, sl->incognitas, sl->expressoes, sl->n);
 		calcula_jacobiana(sl->jacobiana, sl->incognitas, result_jacobiana, sl->n);
+
+		// for (int i = 0; i < sl->n; i++){
+		// 	for (int j = 0; j < sl->n; j++)
+		// 		printf("jac %lf ", result_jacobiana[i][j]);
+		// 	printf("\n");
+		// }
+
+		// Resolver o sistema linear para encontrar o delta
 		eliminacao_gauss(result_jacobiana, sl->termos_indep, sl->n);
 		retrossub(result_jacobiana, sl->termos_indep, delta, sl->n);
 
-		for (int i = 0; i < sl->n; i++)
-			printf("delta(x%d) = %lf ", i, delta[i]);
+		// for (int i = 0; i < sl->n; i++){
+		// 	for (int j = 0; j < sl->n; j++)
+		// 		printf("jac_gauss %lf ", result_jacobiana[i][j]);
+		// 	printf("\n");
+		// }
 
 
 		// X^(i+1) = X^(i) + delta^(i)
-		for (int i = 0; i < sl->n; i++){
+		for (int i = 0; i < sl->n; i++)
 			sl->incognitas[i] += delta[i]; 
-		}
 		
 		// Se ||delta^(i)|| < epsilon devolva X^(i+1)
-		// if ( norma(delta, sl->incognitas, sl->n) < epsilon )
-			// 	return;
+		// if (norma(delta, sl->incognitas, sl->n) < epsilon )
+		// 	return;
+
+
+		// for (int i = 0; i < sl->n; i++)
+		// 	printf("delta(x%d) = %lf \n", i, delta[i]);
+		// printf("\n");
 	}
 
-	free(delta);
-	free(result_jacobiana);
 	return;
 }
+
+
+	// // Imprime Result
+	// for (int i=0; i<n; i++){
+	// 	for (int j=0; j<n; j++)
+	// 		printf("%d, %d = %lf\n", i, j, matriz_coef[i][j]);
+	// 	printf("\n");
+	// }

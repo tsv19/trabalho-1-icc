@@ -77,10 +77,10 @@ void eliminacao_gauss(double **matriz_coef, double *vet_termos, uint n){
 			
 			for (int j = i + 1; j < n; ++j)
 				matriz_coef[k][j] -= matriz_coef[i][j] * m;
-			
+
 			vet_termos[k] -= vet_termos[i] * m;
 		}
-	}	
+	}
 }
 
 
