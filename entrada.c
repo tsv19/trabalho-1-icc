@@ -16,9 +16,9 @@ Fernanda Yukari Kawasaki (GRR20185057)
 *	param	output	arquivo que sera utilizado para armazenar a solucao
 *
 */ 
-int le_opcoes(int argc, char *argv[], FILE *output){
+int le_opcoes(int argc, char *argv[]){
     int opcao					= 0;
-
+	FILE *output;
     // usa getopt para filtrar as entradas do programa
 	while ((opcao = getopt(argc, argv, "o:")) != -1){
 		switch (opcao){

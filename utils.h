@@ -23,17 +23,17 @@ Fernanda Yukari Kawasaki (GRR20185057)
 typedef struct SL_T {
 	unsigned int n;
 	int **expressoes;  // expressoes das funcoes nao lineares que compoem o sistema
-	void ***jacobiana;
+	void ***derivadas;
 	double *incognitas;  // aproximacao das ingonitas
 	double *termos_indep;
 } SL_T;
 
 
 // 
-void imprime_x(double *xi, uint n);
+void imprime_x(FILE *output, double *xi, uint n);
 
 // 
-void imprime_expressoes(SL_T * sl);
+void imprime_expressoes(FILE *output, SL_T * sl);
 
 // 
 void imprime_tempo(FILE *output, double tempo_total, double tempo_derivadas, 
@@ -46,9 +46,10 @@ void destroi_sl(SL_T *sl);
 SL_T *aloca_sistema_linear(uint n, int **expressoes, double *incognitas);
 
 
-void imprime_resultados(SL_T * sistema_linear, double *delta, double **result_jacobiana);
-
 //  Retorna tempo em milisegundos
 double timestamp(void);
+
+// 
+double * obtem_variaveis(uint n, double *incognitas, char **names, int *count);
 
 #endif

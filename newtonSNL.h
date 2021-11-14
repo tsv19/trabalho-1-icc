@@ -30,6 +30,6 @@ double calc_crit_stop(double x_atual, double x_anterior);
 double calc_new_x(double x, double numerador, double denominador);
 
 // calcula o metodo de newton 
-void newtonMetod(SL_T *sl, double epsilon, uint max_iter, double *jacobiana_time, double *sl_time);
+void newtonMetod(SL_T *sl, double epsilon, uint max_iter, double *jacobiana_time, double *sl_time, FILE *output);
 
 #endif

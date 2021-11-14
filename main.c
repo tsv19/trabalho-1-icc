@@ -29,26 +29,53 @@ int main(int argc, char *argv[]){
 	double epsilon 				= 0; 
 	unsigned int max_iter		= 0;
 
-	le_opcoes(argc, argv, output);
+	// le_opcoes(argc, argv, arquivo);
+	
+	int opcao					= 0;
 
+    // usa getopt para filtrar as entradas do programa
+	while ((opcao = getopt(argc, argv, "o:")) != -1){
+		switch (opcao){
+			// opcao de saida
+			case 'o':
+				output = fopen(optarg, "w+");
+				if (!output){
+					fprintf(stderr, "Erro ao abrir arquivo de saida\n");
+					exit(1);
+				}
+			break;
+			
+			// caso seja digitada uma opcao diferente
+			case '?':
+				if ( optopt == 'o')
+					fprintf(stderr, "Opcao -%c requer um argumento.\n", optopt);
+				else if (isprint (optopt))
+					fprintf(stderr, "Opcao desconhecida `-%c'.\n", optopt);
+				else
+					fprintf(stderr, "Caracter de opcao desconhecido`\\x%x'.\n",
+							optopt);
+			return 1;
+			
+			default:
+				abort();
+		}
+	}
 
     while (!feof(input)){
 		double newton_time = 0, deriv_time = 0, jacobiana_time = 0, sl_time = 0;
         sistema_linear = le_input(input, &epsilon, &max_iter);
 
 		deriv_time = timestamp();
-		gera_matriz_jacobiana(sistema_linear->jacobiana, sistema_linear->expressoes, sistema_linear->incognitas, sistema_linear->n);
+		gera_matriz_derivadas(sistema_linear->derivadas, sistema_linear->expressoes, sistema_linear->incognitas, sistema_linear->n);
 		deriv_time = timestamp() - deriv_time;
-		
 
-		// imprime_expressoes(sistema_linear);
+		imprime_expressoes(output, sistema_linear);
 
 		newton_time = timestamp();
-		newtonMetod(sistema_linear, epsilon, max_iter, &jacobiana_time, &sl_time);  // Resolve cada ENL
+		newtonMetod(sistema_linear, epsilon, max_iter, &jacobiana_time, &sl_time, output);  // Resolve cada ENL
 		newton_time = timestamp() - newton_time;
 		
 		imprime_tempo(output, newton_time, deriv_time, jacobiana_time, sl_time);
-		break;
     }
 
 	fclose(input);

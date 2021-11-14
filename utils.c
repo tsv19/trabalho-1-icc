@@ -37,7 +37,7 @@ void destroi_sl(SL_T *sl){
 	free(sl->expressoes);
 	free(sl->incognitas);
 	free(sl->termos_indep);
-	free(sl->jacobiana);
+	free(sl->derivadas);
 	free(sl);
 }
 
@@ -69,55 +69,47 @@ SL_T *aloca_sistema_linear(uint n, int **expressoes, double *incognitas){
 	}
 
 	// void ***
-	sl->jacobiana = (void ***)malloc(n * sizeof(void **) + n * n * sizeof(void *));
+	sl->derivadas = (void ***)malloc(n * sizeof(void **) + n * n * sizeof(void *));
 	
-	if ( sl->jacobiana == NULL ){
+	if ( sl->derivadas == NULL ){
 		fprintf(stderr, "Erro ao alocar memoria em \"gera_matriz_jacobiana\"");
 		abort();
 	}
-	sl->jacobiana[0] = (void **)(sl->jacobiana + n) ;
+	sl->derivadas[0] = (void **)(sl->derivadas + n);
 	for (int i = 1; i < n; i++){
-  		sl->jacobiana[i] = sl->jacobiana[0] + (i * n) ;
+  		sl->derivadas[i] = sl->derivadas[0] + (i * n);
 	}
 
 	return sl;
 }
 
-void imprime_x(double *xi, uint n){
-	printf("#\n");
+
+double * obtem_variaveis(uint n, double *incognitas, char **names, int *count){
+	double *variaveis = (double *)malloc(n * sizeof(double));
+	for (int linha=0; linha<n; linha++){
+		// Obtem os valores das incognitas correspondentes
+		// Para x1, retorna o valor de x1 que esta no vetor de incognitas
+		for (int m=0; m<*count; m++ ){
+			int indice = atoi(names[m]+1)-1;
+			variaveis[indice] = incognitas[indice];
+		}
+	}
+	return variaveis;
+}
+
+
+void imprime_x(FILE *output, double *xi, uint n){
+	fprintf(output, "#\n");
 	
 	for (int i = 0; i < n; i++)
-		printf("x%d = %lf\n", i+1, xi[i]);
+		fprintf(output, "x%d = %lf\n", i+1, xi[i]);
 }
 
 
-void imprime_expressoes(SL_T * sl){
-	printf("%u\n", sl->n);
+void imprime_expressoes(FILE *output, SL_T * sl){
+	fprintf(output, "%u\n", sl->n);
 	for (int i = 0; i < sl->n; i++)
-		printf("%s\n", evaluator_get_string(sl->expressoes[i]));
-}
-
-
-void imprime_resultados(SL_T * sistema_linear, double *delta, double **result_jacobiana){
-	printf("===================\n");
-	for (int i = 0; i < sistema_linear->n; i++){
-		for (int j = 0; j < sistema_linear->n; j++)
-			printf("jac %lf ", result_jacobiana[i][j]);	
-		printf("\n");
-	}
-
-	printf("\n");
-	for (int i = 0; i < sistema_linear->n; i++)
-		printf("incognitas(x%d) = %lf \n", i, sistema_linear->incognitas[i]);
-
-
-	// printf("\n");
-	// for (int i = 0; i < sistema_linear->n; i++)
-	// 	printf("termos_indep(x%d) = %lf \n", i, sistema_linear->termos_indep[i]);
-
-	// printf("\n");
-	// for (int i = 0; i < sistema_linear->n; i++)
-	// 	printf("delta(x%d) = %lf \n", i, delta[i]);
+		fprintf(output, "%s = 0\n", evaluator_get_string(sl->expressoes[i]));
 }
 
 
