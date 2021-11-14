@@ -13,17 +13,6 @@ Fernanda Yukari Kawasaki (GRR20185057)
 #include "utils.h"
 
 /*
-*	Le opcoes passadas quando o programa eh chamado
-*
-*	param	argc	quantidade de argumentos
-*	param	argv	argumentos passados
-*	param	output	arquivo que sera utilizado para armazenar a solucao
-*
-*/
-// int le_opcoes(int argc, char *argv[]);
-
-
-/*
 *	Le o arquivo passado na entrada padrao
 *
 *	param	input		arquivo da entrada padrao

@@ -51,8 +51,15 @@ void troca_linha(double **matriz_coef, double *vet_termos, int linha, uint pivo,
 */
 void eliminacao_gauss(double **matriz_coef, double *vet_termos, uint n);
 
-// 
-void retrossub(double **matriz_coef, double *vet_termos, double *x, uint n);
+/*
+*	Realiza a retrossubstituicao das incognitas,
+*	ou seja, substitui os valores das incognitas
+*	nas equacoes e utiliza os resultados obtidos
+*	para calcular as proximas equacoes.
+*
+*	param	sl	struct do sistema linear
+*
+*/ void retrossub(double **matriz_coef, double *vet_termos, double *x, uint n);
 
 
 #endif

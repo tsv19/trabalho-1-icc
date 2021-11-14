@@ -28,8 +28,6 @@ int main(int argc, char *argv[]){
 
 	double epsilon 				= 0; 
 	unsigned int max_iter		= 0;
-
-	// le_opcoes(argc, argv, arquivo);
 	
 	int opcao					= 0;
 
@@ -61,25 +59,34 @@ int main(int argc, char *argv[]){
 		}
 	}
 
+	// le o arquivo da entrada padrao
     while (!feof(input)){
 		double newton_time = 0, deriv_time = 0, jacobiana_time = 0, sl_time = 0;
-        sistema_linear = le_input(input, &epsilon, &max_iter);
 
+		// Obtem um bloco em cada iteracao
+		sistema_linear = le_input(input, &epsilon, &max_iter);
+
+		// Gera a matriz com as funcoes derivadas parciais
 		deriv_time = timestamp();
 		gera_matriz_derivadas(sistema_linear->derivadas, sistema_linear->expressoes, sistema_linear->incognitas, sistema_linear->n);
 		deriv_time = timestamp() - deriv_time;
 
+		// Imprime as expressoes das funcoes (nao lineares) do sistema
 		imprime_expressoes(output, sistema_linear);
 
+		// Calcula o valor aproximado das incognitas usando o metodo de newton
 		newton_time = timestamp();
 		newtonMetod(sistema_linear, epsilon, max_iter, &jacobiana_time, &sl_time, output);  // Resolve cada ENL
 		newton_time = timestamp() - newton_time;
-		
+
+		// Imprime o tempo gasto para o calculo de Newton, das derivadas parciais, da Jacobiana e do SL
 		imprime_tempo(output, newton_time, deriv_time, jacobiana_time, sl_time);
 
+		// Libera a memoria
 		destroi_sl(sistema_linear);
     }
 
+	// Fecha os arquivos
 	fclose(input);
 	fclose(output);
     return EXIT_SUCCESS;

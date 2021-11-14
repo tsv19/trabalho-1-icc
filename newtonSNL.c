@@ -8,7 +8,14 @@ Fernanda Yukari Kawasaki (GRR20185057)
 
 #include "newtonSNL.h"
 
-// Retorna a maior norma
+
+/*
+*	Retorna a norma do vetor, ou seja,
+*	o maior valor do vetor
+*
+*	param	vetor	vetor que 
+*
+*/ 
 double acha_max(double *vetor, uint n){
 	double maior = vetor[0];
 
