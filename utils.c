@@ -8,14 +8,125 @@ Fernanda Yukari Kawasaki (GRR20185057)
 
 #include "utils.h"
 
+
+/*
+*	Libera a memoria ocupada pela struct SNL_T (sistema nao linear)
+*
+*	@param	snl	apontador para o sistema nao linear
+*/
+void destroi_snl(SNL_T *snl){
+	free(snl->expressoes);
+	free(snl->incognitas);
+	free(snl->termos_indep);
+	free(snl->derivadas);
+	free(snl);
+}
+
+
+/*
+*	Aloca espaco na memoria para o sistema nao linear
+*
+*	@param	n			dimensao do sistema
+*	@param	expressoes	expressoes das funcoes nao lineares
+*	@param	incognitas	vetor com aproximacao inicial das incognitas
+*
+*	@return	struct do sistema nao linear
+*/ 
+SNL_T *aloca_sistema_nao_linear(uint n, int **expressoes, double *incognitas){
+	SNL_T *snl = (SNL_T *)malloc(sizeof(SNL_T));
+	if ( snl == NULL ){
+		fprintf(stderr, "Erro ao alocar memoria em \"aloca_sistema_linear\"");
+		abort();
+	}
+
+	snl->n = n;
+	snl->expressoes	 = expressoes;
+	snl->incognitas	 = incognitas;
+
+	snl->termos_indep	 = (double *)malloc(n * sizeof(double));
+	if ( snl->termos_indep == NULL ){
+		fprintf(stderr, "Erro ao alocar memoria em \"aloca_sistema_linear\"");
+		abort();
+	}
+
+	snl->derivadas = (void ***)malloc(n * sizeof(void **) + n * n * sizeof(void *));
+	if ( snl->derivadas == NULL ){
+		fprintf(stderr, "Erro ao alocar memoria em \"gera_matriz_jacobiana\"");
+		abort();
+	}
+
+	// Ajustando ponteiros para as derivadas
+	snl->derivadas[0] = (void **)(snl->derivadas + n);
+	for (int i = 1; i < n; i++){
+  		snl->derivadas[i] = snl->derivadas[0] + (i * n);
+	}
+
+	return snl;
+}
+
+
+/*
+*	Aloca espaco para os resultados da jacobiana
+*
+*	@param	n	dimensao do sistema
+*
+*	@return 	matriz alocada
+*
+*/
+double **aloca_result_jacobiana(uint n){
+	double **result_jacobiana = (double **)malloc(n * sizeof(double *) + 
+												n * n * sizeof(double));
+
+	// Ajustando ponteiros para a jacobiana
+	result_jacobiana[0] = (double *)(result_jacobiana + n) ;
+	for (int i = 1; i < n; i++)
+  		result_jacobiana[i] = result_jacobiana[0] + (i * n) ;
+	
+	// Incializando jacobiana
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < n; j++)
+			result_jacobiana[i][j] = 0;
+
+	return result_jacobiana;
+}
+
+
+/*
+*	Obtem o valor das incognitas passadas
+*
+*	@param	n			dimensao do sistema
+*	@param	incognitas	vetor com aproximacao das incognitas
+*	@param	names		vetor com o nome das incognitas da expressao
+*	@param	count		tamanho do vetor names
+*
+*	@return				vetor com os valores das incognitas da expressao (names)
+*
+*/ 
+double *obtem_variaveis(uint n, double *incognitas, char **names, int count){
+	double *variaveis = (double *)calloc(n, sizeof(double));
+	if (!variaveis){
+		fprintf(stderr, "Erro ao alocar memoria em \"obtem_variaveis\"");
+		abort();
+	}
+
+	// Obtem os valores das incognitas correspondentes
+	// Para x1, retorna o valor de x1 que esta no vetor de incognitas
+	for (int indice = 0; indice < count; indice++){
+		int linha = atoi(names[indice]+1)-1;
+		variaveis[indice] = incognitas[linha];
+	}
+	return variaveis;
+}
+
+
 /*
 *	Imprime a saida no arquivo indicado
 *
-*	param	output				arquivo onde a saida sera armazenada
-*	param	tempo_total			tempo
-*	param	tempo_derivadas		tempo gasto no calculo das derivadas parciais
-*	param	tempo_jacobiana		tempo gasto para gerar a matriz jacobiana
-*	param	tempo_sl			tempo gasto para resolver os sistemas lineares
+*	@param	output				arquivo onde a saida sera armazenada
+*	@param	tempo_total			tempo
+*	@param	tempo_derivadas		tempo gasto no calculo das derivadas parciais
+*	@param	tempo_jacobiana		tempo gasto para gerar a matriz jacobiana
+*	@param	tempo_sl			tempo gasto para resolver os sistemas lineares
 */
 void imprime_tempo(FILE *output, double tempo_total, double tempo_derivadas, 
 double tempo_jacobiana, double tempo_sl){
@@ -29,89 +140,32 @@ double tempo_jacobiana, double tempo_sl){
 
 
 /*
-*	Libera a memoria ocupada pela struct SL_T (sistema linear)
+*	Imprime os valores aproximados das incognitas
 *
-*	param	sl	apontador para o sistema linear
+*	@param	output		apontador para o arquivo de saida
+*	@param	xi			vetor com os valores das incognitas
+*	@param	n			dimensao do sistema
+*
 */
-void destroi_sl(SL_T *sl){
-	free(sl->expressoes);
-	free(sl->incognitas);
-	free(sl->termos_indep);
-	free(sl->derivadas);
-	free(sl);
-}
-
-
-/*
-*	Aloca espaco na memoria para o sistema linear
-*
-*	param	n			dimensao do sistema
-*	param	expressoes	expressoes das funcoes nao lineares
-*	param	incognitas	vetor com aproximacao das incognitas
-*
-*/ 
-SL_T *aloca_sistema_linear(uint n, int **expressoes, double *incognitas){
-	SL_T *sl = (SL_T *)malloc(sizeof(SL_T));
-	if ( sl == NULL ){
-		fprintf(stderr, "Erro ao alocar memoria em \"aloca_sistema_linear\"");
-		abort();
-	}
-
-	sl->n = n;
-	sl->expressoes	 = expressoes;
-	sl->incognitas	 = incognitas;
-	
-	sl->termos_indep	 = (double *)malloc(n * sizeof(double));
-	
-	if ( sl->termos_indep == NULL ){
-		fprintf(stderr, "Erro ao alocar memoria em \"aloca_sistema_linear\"");
-		abort();
-	}
-
-	// void ***
-	sl->derivadas = (void ***)malloc(n * sizeof(void **) + n * n * sizeof(void *));
-	
-	if ( sl->derivadas == NULL ){
-		fprintf(stderr, "Erro ao alocar memoria em \"gera_matriz_jacobiana\"");
-		abort();
-	}
-	sl->derivadas[0] = (void **)(sl->derivadas + n);
-	for (int i = 1; i < n; i++){
-  		sl->derivadas[i] = sl->derivadas[0] + (i * n);
-	}
-
-	return sl;
-}
-
-
-double *obtem_variaveis(uint n, double *incognitas, char **names, int count){
-	double *variaveis = (double *)calloc(n, sizeof(double));
-	if (!variaveis){
-		fprintf(stderr, "Erro ao alocar memoria em \"obtem_variaveis\"");
-		abort();
-	}
-	// Obtem os valores das incognitas correspondentes
-	// Para x1, retorna o valor de x1 que esta no vetor de incognitas
-	for (int indice = 0; indice < count; indice++){
-		int linha = atoi(names[indice]+1)-1;
-		variaveis[indice] = incognitas[linha];
-	}
-	return variaveis;
-}
-
-
 void imprime_x(FILE *output, double *xi, uint n){
 	fprintf(output, "#\n");
-	
+
 	for (int i = 0; i < n; i++)
 		fprintf(output, "x%d = %lf\n", i+1, xi[i]);
 }
 
 
-void imprime_expressoes(FILE *output, SL_T * sl){
-	fprintf(output, "%u\n", sl->n);
-	for (int i = 0; i < sl->n; i++)
-		fprintf(output, "%s = 0\n", evaluator_get_string(sl->expressoes[i]));
+/*
+*	Imprime as expressoes
+*
+*	@param	output		apontador para o arquivo de saida
+*	@param	snl			sistema nao linear
+*
+*/
+void imprime_expressoes(FILE *output, SNL_T * snl){
+	fprintf(output, "%u\n", snl->n);
+	for (int i = 0; i < snl->n; i++)
+		fprintf(output, "%s = 0\n", evaluator_get_string(snl->expressoes[i]));
 }
 
 
@@ -123,4 +177,3 @@ double timestamp(void){
 	gettimeofday(&tp, NULL);
 	return((double)(tp.tv_sec*1000.0 + tp.tv_usec/1000.0));
 }
-

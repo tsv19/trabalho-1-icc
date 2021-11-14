@@ -15,9 +15,11 @@ Fernanda Yukari Kawasaki (GRR20185057)
 /*
 *	Le o arquivo passado na entrada padrao
 *
-*	param	input		arquivo da entrada padrao
-*	param	epsilon		tolerancia epsilon (criterio de parada)
-*	param	max_iter	numero maximo de iteracoes para o metodo de newton
+*	@param	input		arquivo da entrada padrao
+*	@param	epsilon		tolerancia epsilon (criterio de parada)
+*	@param	max_iter	numero maximo de iteracoes para o metodo de newton
 *
-*/  
-SL_T *le_input(FILE *output, double *epsilon, uint *max_iter);
+*	@return	sistema nao linear alocado
+*
+*/
+SNL_T *le_input(FILE *output, double *epsilon, uint *max_iter);

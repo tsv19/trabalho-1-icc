@@ -23,13 +23,17 @@ Fernanda Yukari Kawasaki (GRR20185057)
 #include "utils.h"
 
 
-// Criterio de parada escolhido: erro relativo aproximado (ERa)
-double calc_crit_stop(double x_atual, double x_anterior);
-
-// Criterio de parada escolhido: erro relativo aproximado (ERa)
-double calc_new_x(double x, double numerador, double denominador);
-
-// calcula o metodo de newton 
-void newtonMetod(SL_T *sl, double epsilon, uint max_iter, double *jacobiana_time, double *sl_time, FILE *output);
+/*
+*	Calcula o valor aproximado das incognitas usando o metodo de Newton
+*
+*	@param	snl					sistema nao linear
+*	@param	epsilon				tolerancia
+*	@param	max_iter			numero maximo de iteracoes do Newton
+*	@param	jacobiana_time		tempo gasto para a jacobiana
+*	@param	sl_time				tempo gasto para resolver o sistema linear
+*	@param	output				arquivo de saida
+*
+*/
+void newtonMetod(SNL_T *sl, double epsilon, uint max_iter, double *jacobiana_time, double *sl_time, FILE *output);
 
 #endif

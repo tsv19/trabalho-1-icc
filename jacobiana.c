@@ -12,12 +12,11 @@ Fernanda Yukari Kawasaki (GRR20185057)
 /*
 *	Faz o calculo da jacobiana para cada funcao derivada da matriz
 *
-*	param	jacobiana	: armazena a matriz com as F'(X);
-*	param	incognitas	: armazena os valores de X atuais;
-*	param	result     	: armazena o resultado do calculo da jacobiana;
-*	param	n           : armazena o tamanho do sistema linear;
-*	
-*	return	deriv_time	: tempo gasto para o calculo das derivadas;
+*	@param	derivadas	 armazena a matriz com as F'(X)
+*	@param	incognitas	 armazena os valores de X atuais
+*	@param	result     	 armazena o resultado do calculo da jacobiana
+*	@param	n            armazena o tamanho do sistema linear
+*
 */
 void calcula_jacobiana(void ***derivadas, double *incognitas, double **result, uint n){
 	char **names = malloc(n * SIZE_BUFFER);
@@ -36,10 +35,11 @@ void calcula_jacobiana(void ***derivadas, double *incognitas, double **result, u
 /*
 *	Gera a matriz jacobiana com todos os F'(X)
 *
-*	param	jacobiana	: armazena a matriz com as F'(X);
-*	param	expressoes  : armazena todas das F(X) recebidas do input;
-*	param	incognitas  : armazena o resultado do calculo da jacobiana;
-*	param	n           : armazena o tamanho do sistema linear ;
+*	@param	derivadas	 armazena a matriz com as F'(X) (evaluators)
+*	@param	expressoes   armazena todas das F(X) recebidas do input
+*	@param	incognitas   armazena o resultado do calculo da jacobiana
+*	@param	n            armazena o tamanho do sistema linear
+*
 */
 void gera_matriz_derivadas(void ***derivadas, int **expressoes, double *incognitas, uint n){
 	char xj[SIZE_BUFFER+1];
