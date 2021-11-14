@@ -20,7 +20,7 @@ Fernanda Yukari Kawasaki (GRR20185057)
 *	param	output	arquivo que sera utilizado para armazenar a solucao
 *
 */
-int le_opcoes(int argc, char *argv[]);
+// int le_opcoes(int argc, char *argv[]);
 
 
 /*

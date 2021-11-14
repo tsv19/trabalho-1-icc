@@ -76,6 +76,8 @@ int main(int argc, char *argv[]){
 		newton_time = timestamp() - newton_time;
 		
 		imprime_tempo(output, newton_time, deriv_time, jacobiana_time, sl_time);
+
+		destroi_sl(sistema_linear);
     }
 
 	fclose(input);

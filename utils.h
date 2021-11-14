@@ -50,6 +50,6 @@ SL_T *aloca_sistema_linear(uint n, int **expressoes, double *incognitas);
 double timestamp(void);
 
 // 
-double * obtem_variaveis(uint n, double *incognitas, char **names, int *count);
+double *obtem_variaveis(uint n, double *incognitas, char **names, int count);
 
 #endif

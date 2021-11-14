@@ -26,7 +26,7 @@ Fernanda Yukari Kawasaki (GRR20185057)
 *	param	coluna			coluna em q se deseja achar o pivo
 *	param	n				dimensao do sistema linear
 */
-uint encontra_maximo(double **matriz_coef, uint coluna, uint n);
+int encontra_maximo(double **matriz_coef, int coluna, uint n);
 
 
 /*

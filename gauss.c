@@ -17,12 +17,12 @@ Fernanda Yukari Kawasaki (GRR20185057)
 *	param	coluna			coluna em q se deseja achar o pivo
 *	param	n				dimensao do sistema linear
 */
-uint encontra_maximo(double **matriz_coef, uint coluna, uint n){
-	uint maximo = coluna;
+int encontra_maximo(double **matriz_coef, int coluna, uint n){
+	int maximo = coluna;
 	
-	for (int j = coluna + 1; j < n; j++){
-		if ( matriz_coef[maximo][coluna] < matriz_coef[j][coluna])
-			maximo = j;
+	for (int linha = coluna + 1; linha < n; linha++){
+		if ( matriz_coef[maximo][coluna] - matriz_coef[linha][coluna] < __DBL_EPSILON__ )
+			maximo = linha;
 	}
 
 	return maximo;
@@ -49,9 +49,9 @@ void troca_linha(double **matriz_coef, double *vet_termos, int linha, uint pivo,
 		matriz_coef[pivo][j] 	= temp;
 	}
 
-	temp = vet_termos[linha];
-	vet_termos[linha] = vet_termos[pivo];
-	vet_termos[pivo] = temp;
+	temp 				= vet_termos[linha];
+	vet_termos[linha] 	= vet_termos[pivo];
+	vet_termos[pivo] 	= temp;
 }
 
 
@@ -75,7 +75,7 @@ void eliminacao_gauss(double **matriz_coef, double *vet_termos, uint n){
 			
 			matriz_coef[k][i] = 0.0;
 			
-			for (int j = i + 1; j < n; ++j)
+			for (int j = i + 1; j < n; j++)
 				matriz_coef[k][j] -= matriz_coef[i][j] * m;
 
 			vet_termos[k] -= vet_termos[i] * m;
@@ -96,7 +96,7 @@ void eliminacao_gauss(double **matriz_coef, double *vet_termos, uint n){
 void retrossub(double **matriz_coef, double *vet_termos, double *x, uint n){
 	for (int i = (n) - 1; i >= 0; --i){
 		x[i] = vet_termos[i];
-		for (int j = i + 1; j < n; j++){ // nao inclui a diagonal
+		for (int j = i + 1; j < n; ++j){ // nao inclui a diagonal
 			x[i] -= matriz_coef[i][j] * x[j];
 		}
 		x[i] /= matriz_coef[i][i];

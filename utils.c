@@ -84,15 +84,17 @@ SL_T *aloca_sistema_linear(uint n, int **expressoes, double *incognitas){
 }
 
 
-double * obtem_variaveis(uint n, double *incognitas, char **names, int *count){
-	double *variaveis = (double *)malloc(n * sizeof(double));
-	for (int linha=0; linha<n; linha++){
-		// Obtem os valores das incognitas correspondentes
-		// Para x1, retorna o valor de x1 que esta no vetor de incognitas
-		for (int m=0; m<*count; m++ ){
-			int indice = atoi(names[m]+1)-1;
-			variaveis[indice] = incognitas[indice];
-		}
+double *obtem_variaveis(uint n, double *incognitas, char **names, int count){
+	double *variaveis = (double *)calloc(n, sizeof(double));
+	if (!variaveis){
+		fprintf(stderr, "Erro ao alocar memoria em \"obtem_variaveis\"");
+		abort();
+	}
+	// Obtem os valores das incognitas correspondentes
+	// Para x1, retorna o valor de x1 que esta no vetor de incognitas
+	for (int indice = 0; indice < count; indice++){
+		int linha = atoi(names[indice]+1)-1;
+		variaveis[indice] = incognitas[linha];
 	}
 	return variaveis;
 }
