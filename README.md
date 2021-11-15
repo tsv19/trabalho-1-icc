@@ -100,4 +100,41 @@ do vetor de deltas eh calculada.
 --------------------------------------------------------------------------------
 
 # Erros
+## le_input()
+- Erro ao alocar memoria em "le_input"
+    - Pode ocorrer ao tentar alocar memoria para "expressoes" ou para "incognitas".
 
+## eliminacao_gauss() e retrossub()
+- Divisao por 0 em "eliminacao_gauss"
+    - Pode ocorrer em eliminacao_gauss ou em retrossub, e indica que um dos coeficientes da diagonal eh 0. Como eles sao utilizados como denominador em ambas as funcoes, eh preciso checar antes de realizar a conta para certificar que nenhuma divisao por 0 seja feita.
+
+## newtonMetod()
+- Erro ao alocar memoria em "newtonMetod"
+    - Pode ocorrer ao tentar alocar memoria para o vetor de valores "delta" ou para a matriz com os resultados da jacobiana "result_jacobiana".
+- Erro ao calcular termos independentes em "calcula_termos_indep"
+    - Pode ocorrer durante o calculo de termos independentes. Caso o vetor de valores de cada variavel calculado em "obtem_variaveis" nao seja retornado corretamente, o calcula_termos_indep retorna um codigo de erro, e o newtonMetod imprime a mensagem de erro.
+- Erro ao calcular a jacobiana em "calcula_jacobiana"
+    - Pode ocorrer durante a funcao "calcula_jacobiana", e tambem eh causado por um problema na funcao "obtem_variaveis". Se ela retorna um vetor invalido, o "calcula_jacobiana" retorna codigo de erro e o newtonMetod imprime a mensagem de erro.
+
+## aloca_sistema_nao_linear()
+- Erro ao alocar memoria em "aloca_sistema_linear"
+    - Pode ocorrer ao tenta alocar memoria para o sistema nao linear "snl", para o vetor de termos independentes "termos_indep", ou para a matriz de derivadas "derivadas".
+- Erro ao alocar memoria em "obtem_variaveis"
+    - Pode ocorrer ao tenta alocar memoria para "valores"
+
+## calcula_jacobiana()
+- Erro ao alocar memoria em "obtem_variaveis"
+    - Pode ocorrer ao tenta alocar memoria para "valores"
+
+## gera_matriz_derivadas()
+- Erro ao gerar matriz de dedrivadas em \"gera_matriz_derivadas\" 
+    - Pode ocorrer ao tenta derivar uma funcao passada como argumento para "evaluator_derivative()"
+
+
+## main()
+- Erro ao abrir arquivo de saida
+    - Ocorre quando um arquivo de saida invalido eh passado na chamada do programa
+- Opcao x requer um argumento
+    - Ocorre quando uma opcao eh escolhida, por exemplo, "-o", porem sem o argumento correspondente, que no caso seria o arquivo de output.
+- Opcao desconhecida x e Caracter de opcao desconhecido x
+    - Ocorre quando a opcao escolhida nao eh esperada

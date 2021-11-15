@@ -70,7 +70,6 @@ int main(int argc, char *argv[]){
 		// Gera a matriz com as funcoes derivadas parciais
 		ret 		= gera_matriz_derivadas(sistema_nao_linear->derivadas, sistema_nao_linear->expressoes, sistema_nao_linear->incognitas, sistema_nao_linear->n, &deriv_time);
 		if ( ret ){
-			fprintf(stderr, "Erro ao gerar matriz de dedrivadas em \"gera_matriz_derivadas\"");
 			destroi_snl(sistema_nao_linear);
 			return EXIT_FAILURE;
 		}

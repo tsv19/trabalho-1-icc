@@ -51,7 +51,7 @@ SNL_T *aloca_sistema_nao_linear(uint n, int **expressoes, double *incognitas){
 
 	snl->derivadas = (void ***)malloc(n * sizeof(void **) + n * n * sizeof(void *));
 	if ( snl->derivadas == NULL ){
-		fprintf(stderr, "Erro ao alocar memoria em \"gera_matriz_jacobiana\"");
+		fprintf(stderr, "Erro ao alocar memoria em \"aloca_sistema_linear\"");
 		abort();
 	}
 

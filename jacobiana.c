@@ -64,6 +64,7 @@ double *incognitas, uint n, double *deriv_time){
 			sprintf(xj, "x%d", j+1);
 			derivadas[i][j] = evaluator_derivative(expressoes[i], xj);
 			if ( !derivadas[i][j] ){
+				fprintf(stderr, "Erro ao gerar matriz de derivadas em \"gera_matriz_derivadas\"");
 				return EXIT_FAILURE;
 			}
 		}
