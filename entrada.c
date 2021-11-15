@@ -36,6 +36,7 @@ SNL_T *le_input(FILE *input, double *epsilon, uint *max_iter){
 		abort();
 	}
 
+	// Obtem as expressoes e cria objetos evaluator
 	for (int i = 0; i < n; i++){
 		fscanf(input, "%s", fx);
 		expressoes[i] = evaluator_create(fx);
@@ -43,13 +44,12 @@ SNL_T *le_input(FILE *input, double *epsilon, uint *max_iter){
         // fprintf(output, "%s\n", fx);
 	}
 
-    // aproximacao inicial
+    // Aproximacao inicial
     incognitas = (double *)malloc(n * sizeof(double));
 	if ( incognitas == NULL ){
 		fprintf(stderr, "Erro ao alocar memoria em \"le_input\"");
 		abort();
 	}
-
 	for (int i = 0; i < n; i++){
 		fscanf(input, "%lf", &incognitas[i]);
         // fprintf(stdout, "%lf\n", incognitas[i]);

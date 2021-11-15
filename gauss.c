@@ -65,7 +65,7 @@ void troca_linha(double **matriz_coef, double *vet_termos, int linha, uint pivo,
 *	@param	vet_termos		vetor com os termos independentes do sistema linear
 *	@param	n				dimensao do sistema linear
 */
-void eliminacao_gauss(double **matriz_coef, double *vet_termos, uint n){
+int eliminacao_gauss(double **matriz_coef, double *vet_termos, uint n){
 	for (int i = 0; i < n; i++){
 		uint pivo = encontra_maximo(matriz_coef, i, n);
 
@@ -74,6 +74,11 @@ void eliminacao_gauss(double **matriz_coef, double *vet_termos, uint n){
 			troca_linha(matriz_coef, vet_termos, i, pivo, n);
 
 		for (int k = i + 1; k < n; k++){
+			if ( fabs(matriz_coef[i][i] - 0.0) < __DBL_EPSILON__){
+				fprintf(stderr, "Divisao por 0 em \"eliminacao_gauss\"");
+				return EXIT_FAILURE;
+			}
+
 			double m = matriz_coef[k][i] / matriz_coef[i][i];
 			matriz_coef[k][i] = 0.0;
 
@@ -83,6 +88,7 @@ void eliminacao_gauss(double **matriz_coef, double *vet_termos, uint n){
 			vet_termos[k] -= vet_termos[i] * m;
 		}
 	}
+	return EXIT_SUCCESS;
 }
 
 
@@ -98,14 +104,20 @@ void eliminacao_gauss(double **matriz_coef, double *vet_termos, uint n){
 *	@param	n				dimensoes do sistema
 *
 */
-void retrossub(double **matriz_coef, double *vet_termos, double *x, uint n){
+int retrossub(double **matriz_coef, double *vet_termos, double *x, uint n){
 	for (int i = (n) - 1; i >= 0; --i){
 		x[i] = vet_termos[i];
 		// Realiza a conta na triangular superior
 		for (int j = i + 1; j < n; ++j){  // nao inclui a diagonal
 			x[i] -= matriz_coef[i][j] * x[j];
 		}
+		
+		if ( fabs(matriz_coef[i][i] - 0.0) < __DBL_EPSILON__){
+			fprintf(stderr, "Divisao por 0 em \"eliminacao_gauss\"");
+			return EXIT_FAILURE;
+		}
+
 		x[i] /= matriz_coef[i][i];
 	}
-
+	return EXIT_SUCCESS;
 }

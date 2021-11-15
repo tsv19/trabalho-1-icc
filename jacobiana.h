@@ -28,7 +28,7 @@ Fernanda Yukari Kawasaki (GRR20185057)
 *	@param	n            armazena o tamanho do sistema linear
 *
 */
-void calcula_jacobiana(void ***derivadas, double *incognitas, 
+int calcula_jacobiana(void ***derivadas, double *incognitas, 
 double **result, uint n);
 
 /*
@@ -38,8 +38,10 @@ double **result, uint n);
 *	@param	expressoes   armazena todas das F(X) recebidas do input
 *	@param	incognitas   armazena o resultado do calculo da jacobiana
 *	@param	n            armazena o tamanho do sistema linear
+*   @param  deriv_time   tempo gasto para calcular as derivadas
 *
 */
-void gera_matriz_derivadas(void ***derivadas, int **expressoes, double *incognitas, uint n);
+int gera_matriz_derivadas(void ***derivadas, int **expressoes, 
+double *incognitas, uint n, double *deriv_time);
 
 #endif

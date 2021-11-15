@@ -18,17 +18,28 @@ Fernanda Yukari Kawasaki (GRR20185057)
 *	@param	n            armazena o tamanho do sistema linear
 *
 */
-void calcula_jacobiana(void ***derivadas, double *incognitas, double **result, uint n){
-	char **names = malloc(n * SIZE_BUFFER);
-	int count = 0;
+int calcula_jacobiana(void ***derivadas, double *incognitas, double **result, 
+uint n){
+	char **names 	= (char **)malloc(n * SIZE_BUFFER);
+	int count 		= 0;
 	
 	for (int i = 0; i < n; i++){
 		for (int j = 0; j < n; j++){
 			evaluator_get_variables(derivadas[i][j], &names, &count);
+			
 			double *valores = obtem_variaveis(n, incognitas, names, count);
+			if ( !valores ){
+				free(names);
+				return EXIT_FAILURE;
+			}
+
 			result[i][j] = evaluator_evaluate(derivadas[i][j], count, names, valores);
+			
+			free(valores);
 		}
 	}
+
+	return EXIT_SUCCESS;
 }
 
 
@@ -39,15 +50,25 @@ void calcula_jacobiana(void ***derivadas, double *incognitas, double **result, u
 *	@param	expressoes   armazena todas das F(X) recebidas do input
 *	@param	incognitas   armazena o resultado do calculo da jacobiana
 *	@param	n            armazena o tamanho do sistema linear
+*   @param  deriv_time   tempo gasto para calcular as derivadas
 *
+*	@return codigo de erro ou sucesso
 */
-void gera_matriz_derivadas(void ***derivadas, int **expressoes, double *incognitas, uint n){
-	char xj[SIZE_BUFFER+1];
+int gera_matriz_derivadas(void ***derivadas, int **expressoes, 
+double *incognitas, uint n, double *deriv_time){
+	char xj[SIZE_BUFFER + 1];
 
+	*deriv_time = timestamp();
 	for (int i = 0; i < n; i++){
 		for (int j = 0; j < n; j++){
 			sprintf(xj, "x%d", j+1);
 			derivadas[i][j] = evaluator_derivative(expressoes[i], xj);
+			if ( !derivadas[i][j] ){
+				return EXIT_FAILURE;
+			}
 		}
 	}
+	*deriv_time = timestamp() - *deriv_time;
+
+	return EXIT_SUCCESS;
 }

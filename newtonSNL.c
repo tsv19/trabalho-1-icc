@@ -39,7 +39,7 @@ double acha_norma(double *vetor, uint n){
 *	@param	n				tamanho do vetor
 *
 */ 
-void calcula_termos_indep(double *termos_indep, double *incognitas, 
+int calcula_termos_indep(double *termos_indep, double *incognitas, 
 int **expressoes, uint n){
 	
 	int count 		= 0;
@@ -47,11 +47,34 @@ int **expressoes, uint n){
 
 	for (int linha = 0; linha < n; linha++){
 		evaluator_get_variables(expressoes[linha], &names, &count);
+		
 		double *valores 		= obtem_variaveis(n, incognitas, names, count);
+		if ( !valores ){
+			free(names);
+			return EXIT_FAILURE;
+		}
+
 		termos_indep[linha] 	= - evaluator_evaluate(expressoes[linha], count,
 														 		names, valores);
 		free(valores);
 	}
+	return EXIT_SUCCESS;
+}
+
+
+/*
+*	Funcao que termina o metodo de Newton. Libera a memoria
+*	e para o contador de tempo.
+*
+*	@param	delta				vetor a ser liberado
+*	@param	result_jacobiana	matriz a ser liberada
+*	@param	newton_time			tempo gasto para o metodo de Newton
+*
+*/
+void termina_newton(double *delta, double **result_jacobiana, double *newton_time){
+	free(delta);
+	free(result_jacobiana);
+	*newton_time = timestamp() - *newton_time;
 }
 
 
@@ -63,19 +86,25 @@ int **expressoes, uint n){
 *	@param	max_iter			numero maximo de iteracoes do Newton
 *	@param	jacobiana_time		tempo gasto para a jacobiana
 *	@param	sl_time				tempo gasto para resolver o sistema linear
+*	@param	newton_time			tempo gasto para o metodo de Newton
 *	@param	output				arquivo de saida
 *
+*	@return codigo de erro ou sucesso
 */
-void newtonMetod(SNL_T *snl, double epsilon, uint max_iter, double *jacobiana_time,
- double *sl_time, FILE *output){
+int newtonMetod(SNL_T *snl, double epsilon, uint max_iter, double *jacobiana_time,
+ double *sl_time, double *newton_time, FILE *output){
+	*newton_time = timestamp();
 	double jacobiana_time_aux, sl_time_aux;
-	double max = 0;
+	double max 	= 0;
+
+	int ret 	= 0;
 
 	// Aloca vetor delta
 	double *delta = (double *)calloc(snl->n, sizeof(double));
 	if ( !delta ){
 		fprintf(stderr, "Erro ao alocar memoria em \"newtonMetod\"");
-		return;
+		*newton_time = timestamp() - *newton_time;
+		return EXIT_FAILURE;
 	}
 
 	// Aloca matriz com os resultados das derivadas parciais
@@ -83,37 +112,63 @@ void newtonMetod(SNL_T *snl, double epsilon, uint max_iter, double *jacobiana_ti
 	if ( !result_jacobiana ){
 		fprintf(stderr, "Erro ao alocar memoria em \"newtonMetod\"");
 		free(delta);
-		return;
+		*newton_time = timestamp() - *newton_time;
+		return EXIT_FAILURE;
 	}
+
+	double *termos_aux = (double *)malloc(snl->n * sizeof(double));
 
 	for (int iter = 0; iter <= max_iter; iter++){
 		// resolva o sl J(X^(i)) * delta^(i) = - F(X^(i))
 
 		// Calcula os termos independentes - F(X^(i))
-		calcula_termos_indep(snl->termos_indep, snl->incognitas, snl->expressoes, snl->n);
+		ret = calcula_termos_indep(snl->termos_indep, snl->incognitas, snl->expressoes, snl->n);
+		if ( ret ){
+			fprintf(stderr, "Erro ao calcular termos independentes em \"calcula_termos_indep\"");
+			termina_newton(delta, result_jacobiana, newton_time);
+			return EXIT_FAILURE; 
+		}
+
+		for (int i = 0; i < snl->n; i++)
+			termos_aux[i] = fabs(snl->termos_indep[i]);
 
 		// Se ||F(X^(i))|| < epsilon devolva X^(i)
-		max = acha_norma(snl->termos_indep, snl->n);
+		max = acha_norma(termos_aux, snl->n);
 		if ( fabs(max) < epsilon ){
 			imprime_x(output, snl->incognitas, snl->n);
-			free(delta);
-			free(result_jacobiana);
-			return;
+			termina_newton(delta, result_jacobiana, newton_time);
+			return EXIT_SUCCESS;
 		}
 
 		imprime_x(output, snl->incognitas, snl->n);
 
 		// Calculo dos valores da jacobiana J(X^(i))
 		jacobiana_time_aux = timestamp();
-		calcula_jacobiana(snl->derivadas, snl->incognitas, result_jacobiana, snl->n);
+		ret = calcula_jacobiana(snl->derivadas, snl->incognitas, result_jacobiana, snl->n);
 		*jacobiana_time += timestamp() - jacobiana_time_aux;
+		if ( ret ){
+			fprintf(stderr, "Erro ao calcular a jacobiana em \"calcula_jacobiana\"");
+			termina_newton(delta, result_jacobiana, newton_time);
+			return EXIT_FAILURE; 
+		}
 
 		// Resolver o sistema linear para encontrar o delta^(i)
 		sl_time_aux = timestamp();
-		eliminacao_gauss(result_jacobiana, snl->termos_indep, snl->n);
+		ret = eliminacao_gauss(result_jacobiana, snl->termos_indep, snl->n);
 		*sl_time += timestamp() - sl_time_aux;
-		retrossub(result_jacobiana, snl->termos_indep, delta, snl->n);
-		
+		if ( ret ){
+			termina_newton(delta, result_jacobiana, newton_time);
+			return EXIT_FAILURE; 
+		}
+
+		// Retrossubstituicao
+		ret = retrossub(result_jacobiana, snl->termos_indep, delta, snl->n);
+		if ( ret ){
+			termina_newton(delta, result_jacobiana, newton_time);
+			return EXIT_FAILURE; 
+		}
+
+		// Atualiza os valores das incognitas
 		for (int i = 0; i < snl->n; i++){
 			snl->incognitas[i] += delta[i];  // X^(i+1) = X^(i) + delta^(i)
 			delta[i] = fabs(delta[i]);
@@ -123,13 +178,11 @@ void newtonMetod(SNL_T *snl, double epsilon, uint max_iter, double *jacobiana_ti
 		max = acha_norma(delta, snl->n);
 		if ( fabs(max) < epsilon ){
 			imprime_x(output, snl->incognitas, snl->n);
-			free(delta);
-			free(result_jacobiana);
-			return;
+			termina_newton(delta, result_jacobiana, newton_time);
+			return EXIT_SUCCESS;
 		}
 	}
 
-	free(delta);
-	free(result_jacobiana);
-	return;
+	termina_newton(delta, result_jacobiana, newton_time);
+	return EXIT_SUCCESS;
 }

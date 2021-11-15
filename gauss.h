@@ -12,6 +12,7 @@ Fernanda Yukari Kawasaki (GRR20185057)
 #include <stdio.h>
 #include <stdlib.h>
 #include <matheval.h>
+#include <math.h>
 #include <stdlib.h>
 #include <sys/time.h>
 #include <unistd.h>
@@ -53,7 +54,7 @@ void troca_linha(double **matriz_coef, double *vet_termos, int linha, uint pivo,
 *	@param	vet_termos		vetor com os termos independentes do sistema linear
 *	@param	n				dimensao do sistema linear
 */
-void eliminacao_gauss(double **matriz_coef, double *vet_termos, uint n);
+int eliminacao_gauss(double **matriz_coef, double *vet_termos, uint n);
 
 
 /*
@@ -68,7 +69,7 @@ void eliminacao_gauss(double **matriz_coef, double *vet_termos, uint n);
 *	@param	n				dimensoes do sistema
 *
 */
-void retrossub(double **matriz_coef, double *vet_termos, double *x, uint n);
+int retrossub(double **matriz_coef, double *vet_termos, double *x, uint n);
 
 
 #endif

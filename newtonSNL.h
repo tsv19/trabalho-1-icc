@@ -24,6 +24,30 @@ Fernanda Yukari Kawasaki (GRR20185057)
 
 
 /*
+*	Retorna a norma do vetor, ou seja,
+*	o maior valor do vetor
+*
+*	@param	vetor	vetor que se quer encontrar a norma
+*	@param	n		tamanho do vetor
+*
+*	@return	maior valor do vetor
+*
+*/ 
+double acha_norma(double *vetor, uint n);
+
+/*
+*	Calcula os valores de F(X), que sao os termos independentes
+*
+*	@param	termos_indep	vetor com os termos independentes
+*	@param	incognitas		vetor com o valor aproximado das incognitas
+*	@param	expressoes		vetor com as expressoes das funcoes
+*	@param	n				tamanho do vetor
+*
+*/ 
+int calcula_termos_indep(double *termos_indep, double *incognitas, 
+int **expressoes, uint n);
+
+/*
 *	Calcula o valor aproximado das incognitas usando o metodo de Newton
 *
 *	@param	snl					sistema nao linear
@@ -31,9 +55,11 @@ Fernanda Yukari Kawasaki (GRR20185057)
 *	@param	max_iter			numero maximo de iteracoes do Newton
 *	@param	jacobiana_time		tempo gasto para a jacobiana
 *	@param	sl_time				tempo gasto para resolver o sistema linear
+*	@param	newton_time			tempo gasto para o metodo de Newton
 *	@param	output				arquivo de saida
 *
+*	@return codigo de erro ou sucesso
 */
-void newtonMetod(SNL_T *sl, double epsilon, uint max_iter, double *jacobiana_time, double *sl_time, FILE *output);
+int newtonMetod(SNL_T *snl, double epsilon, uint max_iter, double *jacobiana_time, double *sl_time, double *newton_time, FILE *output);
 
 #endif

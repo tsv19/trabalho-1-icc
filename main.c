@@ -24,12 +24,13 @@ Fernanda Yukari Kawasaki (GRR20185057)
 int main(int argc, char *argv[]){
 	FILE* input  				= stdin;
 	FILE *output				= stdout;
-	SNL_T *sistema_nao_linear		= NULL;
+	SNL_T *sistema_nao_linear	= NULL;
 
 	double epsilon 				= 0; 
 	unsigned int max_iter		= 0;
 	
 	int opcao					= 0;
+	int ret						= 0; 
 
     // usa getopt para filtrar as entradas do programa
 	while ((opcao = getopt(argc, argv, "o:")) != -1){
@@ -67,17 +68,23 @@ int main(int argc, char *argv[]){
 		sistema_nao_linear = le_input(input, &epsilon, &max_iter);
 
 		// Gera a matriz com as funcoes derivadas parciais
-		deriv_time = timestamp();
-		gera_matriz_derivadas(sistema_nao_linear->derivadas, sistema_nao_linear->expressoes, sistema_nao_linear->incognitas, sistema_nao_linear->n);
-		deriv_time = timestamp() - deriv_time;
+		ret 		= gera_matriz_derivadas(sistema_nao_linear->derivadas, sistema_nao_linear->expressoes, sistema_nao_linear->incognitas, sistema_nao_linear->n, &deriv_time);
+		if ( ret ){
+			fprintf(stderr, "Erro ao gerar matriz de dedrivadas em \"gera_matriz_derivadas\"");
+			destroi_snl(sistema_nao_linear);
+			return EXIT_FAILURE;
+		}
 
 		// Imprime as expressoes das funcoes (nao lineares) do sistema
 		imprime_expressoes(output, sistema_nao_linear);
 
 		// Calcula o valor aproximado das incognitas usando o metodo de newton
-		newton_time = timestamp();
-		newtonMetod(sistema_nao_linear, epsilon, max_iter, &jacobiana_time, &sl_time, output);  // Resolve cada ENL
-		newton_time = timestamp() - newton_time;
+		
+		ret 		= newtonMetod(sistema_nao_linear, epsilon, max_iter, &jacobiana_time, &sl_time, &newton_time, output);  // Resolve cada ENL
+		if ( ret ){
+			destroi_snl(sistema_nao_linear);
+			return EXIT_FAILURE;
+		}
 
 		// Imprime o tempo gasto para o calculo de Newton, das derivadas parciais, da Jacobiana e do SL
 		imprime_tempo(output, newton_time, deriv_time, jacobiana_time, sl_time);

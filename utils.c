@@ -171,7 +171,9 @@ void imprime_expressoes(FILE *output, SNL_T * snl){
 
 /*
 *	Retorna tempo em milisegundos
-*/ 
+*
+*	@return tempo em milisegundos
+*/
 double timestamp(void){
 	struct timeval tp;
 	gettimeofday(&tp, NULL);
