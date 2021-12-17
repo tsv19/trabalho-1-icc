@@ -1,35 +1,37 @@
-CFLAGS = -Wall
+       PROG   = newtonSNL
 
-LIBS = -lm -I/usr/include -L/usr/lib -lmatheval
+           CC = gcc -Wall # -std=c11
+         OBJS = entrada.o newtonSNL.o utils.o jacobiana.o gauss.o main.o
 
-objects = main.o newtonSNL.o utils.o jacobiana.o gauss.o entrada.o
+       LIKWID = /home/soft/likwid
+ LIKWID_FLAGS = -I$(LIKWID)/include -DLIKWID_PERFMON # -std=c11
+  LIKWID_LIBS = -L$(LIKWID)/lib -llikwid
 
-all: newtonSNL
+    AVX_FLAGS = -O3 -mavx2 -march=native -fopt-info-vec # -fstrict-aliasing
 
-newtonSNL: $(objects)
-	gcc $(CFLAGS) $(objects) -o newtonSNL $(LIBS)
+       CFLAGS = $(LIKWID_FLAGS) 
+       LFLAGS = $(LIKWID_LIBS) -lm -I/usr/include -L/usr/lib -lmatheval
 
-main.o: main.c
-	gcc -c $(CFLAGS) main.c $(LIBS)
+.PHONY: all debug clean limpa purge faxina
 
-entrada.o: entrada.c entrada.h
-	gcc -c $(CFLAGS) entrada.c $(LIBS)
+%.o: %.c %.h
+	$(CC) $(CFLAGS) -c $< -o $@ $(LFLAGS)
 
-newtonSNL.o: newtonSNL.c newtonSNL.h
-	gcc -c $(CFLAGS) newtonSNL.c $(LIBS)
+all: likwid
 
-utils.o: utils.c utils.h
-	gcc -c $(CFLAGS) utils.c $(LIBS)
+debug:            CFLAGS += -g -DDEBUG
+avx:              CFLAGS += $(AVX_FLAGS)
 
-jacobiana.o: jacobiana.c jacobiana.h
-	gcc -c $(CFLAGS) jacobiana.c $(LIBS)
+avx likwid debug: $(PROG)
 
-gauss.o: gauss.c gauss.h
-	gcc -c $(CFLAGS) gauss.c $(LIBS)
+$(PROG) : % : $(OBJS) %.o
+	$(CC) $(CFLAGS) -o $@ $^ $(LFLAGS)
 
-teste:
-	./newtonSNL < examples/sistemas.dat -o saida.out
+clean limpa:
+	@echo "Limpando ...."
+	@rm -f *~ *.bak *.tmp
 
-clean: 
-	rm $(objects)
-	rm newtonSNL
+purge faxina:   clean
+	@echo "Faxina ...."
+	@rm -f  $(PROG) *.o $(OBJS) core a.out
+	@rm -f *.png marker.out *.log
