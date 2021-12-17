@@ -19,6 +19,7 @@ Fernanda Yukari Kawasaki (GRR20185057)
 #include "jacobiana.h"
 #include "gauss.h"
 #include "utils.h"
+#include <likwid.h>
 
 
 int main(int argc, char *argv[]){
@@ -31,6 +32,8 @@ int main(int argc, char *argv[]){
 	
 	int opcao					= 0;
 	int ret						= 0; 
+
+	LIKWID_MARKER_INIT;
 
     // usa getopt para filtrar as entradas do programa
 	while ((opcao = getopt(argc, argv, "o:")) != -1){
@@ -68,7 +71,9 @@ int main(int argc, char *argv[]){
 		sistema_nao_linear = le_input(input, &epsilon, &max_iter);
 
 		// Gera a matriz com as funcoes derivadas parciais
+		LIKWID_MARKER_START("derivadas");
 		ret 		= gera_matriz_derivadas(sistema_nao_linear->derivadas, sistema_nao_linear->expressoes, sistema_nao_linear->incognitas, sistema_nao_linear->n, &deriv_time);
+		LIKWID_MARKER_STOP("derivadas");
 		if ( ret ){
 			destroi_snl(sistema_nao_linear);
 			return EXIT_FAILURE;
@@ -78,8 +83,9 @@ int main(int argc, char *argv[]){
 		imprime_expressoes(output, sistema_nao_linear);
 
 		// Calcula o valor aproximado das incognitas usando o metodo de newton
-		
+		LIKWID_MARKER_START("newton");
 		ret 		= newtonMetod(sistema_nao_linear, epsilon, max_iter, &jacobiana_time, &sl_time, &newton_time, output);  // Resolve cada ENL
+		LIKWID_MARKER_STOP("newton");
 		if ( ret ){
 			destroi_snl(sistema_nao_linear);
 			return EXIT_FAILURE;
@@ -95,5 +101,8 @@ int main(int argc, char *argv[]){
 	// Fecha os arquivos
 	fclose(input);
 	fclose(output);
-    return EXIT_SUCCESS;
+
+	LIKWID_MARKER_CLOSE;
+
+	return EXIT_SUCCESS;
 }

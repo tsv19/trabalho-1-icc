@@ -144,7 +144,9 @@ int newtonMetod(SNL_T *snl, double epsilon, uint max_iter, double *jacobiana_tim
 
 		// Calculo dos valores da jacobiana J(X^(i))
 		jacobiana_time_aux = timestamp();
+		LIKWID_MARKER_START("jacobiana");
 		ret = calcula_jacobiana(snl->derivadas, snl->incognitas, result_jacobiana, snl->n);
+		LIKWID_MARKER_STOP("jacobiana");
 		*jacobiana_time += timestamp() - jacobiana_time_aux;
 		if ( ret ){
 			fprintf(stderr, "Erro ao calcular a jacobiana em \"calcula_jacobiana\"");
@@ -154,6 +156,7 @@ int newtonMetod(SNL_T *snl, double epsilon, uint max_iter, double *jacobiana_tim
 
 		// Resolver o sistema linear para encontrar o delta^(i)
 		sl_time_aux = timestamp();
+		LIKWID_MARKER_START("gauss");
 		ret = eliminacao_gauss(result_jacobiana, snl->termos_indep, snl->n);
 		*sl_time += timestamp() - sl_time_aux;
 		if ( ret ){
@@ -163,6 +166,7 @@ int newtonMetod(SNL_T *snl, double epsilon, uint max_iter, double *jacobiana_tim
 
 		// Retrossubstituicao
 		ret = retrossub(result_jacobiana, snl->termos_indep, delta, snl->n);
+		LIKWID_MARKER_STOP("gauss");
 		if ( ret ){
 			termina_newton(delta, result_jacobiana, newton_time);
 			return EXIT_FAILURE; 

@@ -21,6 +21,7 @@ Fernanda Yukari Kawasaki (GRR20185057)
 #include "jacobiana.h"
 #include "gauss.h"
 #include "utils.h"
+#include <likwid.h>
 
 
 /*
